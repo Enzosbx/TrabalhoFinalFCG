@@ -1,0 +1,59 @@
+The system is: Windows - 10.0.22621 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: C:/Program Files/MinGW/bin/gcc.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.exe"
+
+The C compiler identification is GNU, found in "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/3.21.3/CompilerIdC/a.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: C:/Program Files/MinGW/bin/g++.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.exe"
+
+The CXX compiler identification is GNU, found in "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/3.21.3/CompilerIdCXX/a.exe"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MinGW/bin/mingw32-make.exe -f Makefile cmTC_3e7f9/fast && C:/PROGRA~1/MinGW/bin/mingw32-make.exe  -f CMakeFiles\cmTC_3e7f9.dir\build.make CMakeFiles/cmTC_3e7f9.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_3e7f9.dir/testCCompiler.c.obj
+C:\PROGRA~1\MinGW\bin\gcc.exe    -o CMakeFiles\cmTC_3e7f9.dir\testCCompiler.c.obj -c C:\Users\Enzo\Documentos\5_SEMESTRE\FCG\TrabFinalFCG2023\build\CMakeFiles\CMakeTmp\testCCompiler.c
+Linking C executable cmTC_3e7f9.exe
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_3e7f9.dir\link.txt --verbose=1
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\cmTC_3e7f9.dir/objects.a
+C:\PROGRA~1\MinGW\bin\ar.exe qc CMakeFiles\cmTC_3e7f9.dir/objects.a @CMakeFiles\cmTC_3e7f9.dir\objects1.rsp
+C:\PROGRA~1\MinGW\bin\gcc.exe -Wl,--whole-archive CMakeFiles\cmTC_3e7f9.dir/objects.a -Wl,--no-whole-archive -o cmTC_3e7f9.exe -Wl,--out-implib,libcmTC_3e7f9.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\cmTC_3e7f9.dir\linklibs.rsp
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/CMakeTmp'
+
+
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MinGW/bin/mingw32-make.exe -f Makefile cmTC_fca23/fast && C:/PROGRA~1/MinGW/bin/mingw32-make.exe  -f CMakeFiles\cmTC_fca23.dir\build.make CMakeFiles/cmTC_fca23.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_fca23.dir/testCXXCompiler.cxx.obj
+C:\PROGRA~1\MinGW\bin\G__~1.EXE    -o CMakeFiles\cmTC_fca23.dir\testCXXCompiler.cxx.obj -c C:\Users\Enzo\Documentos\5_SEMESTRE\FCG\TrabFinalFCG2023\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+Linking CXX executable cmTC_fca23.exe
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_fca23.dir\link.txt --verbose=1
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\cmTC_fca23.dir/objects.a
+C:\PROGRA~1\MinGW\bin\ar.exe qc CMakeFiles\cmTC_fca23.dir/objects.a @CMakeFiles\cmTC_fca23.dir\objects1.rsp
+C:\PROGRA~1\MinGW\bin\G__~1.EXE -Wl,--whole-archive CMakeFiles\cmTC_fca23.dir/objects.a -Wl,--no-whole-archive -o cmTC_fca23.exe -Wl,--out-implib,libcmTC_fca23.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\cmTC_fca23.dir\linklibs.rsp
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/CMakeTmp'
+
+
+

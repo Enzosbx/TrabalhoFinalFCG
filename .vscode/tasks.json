@@ -1,0 +1,37 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "SDL2",
+			"command": "C:/Program Files/mingw-w64/x86_64-8.1.0-win32-seh-rt_v6-rev0/mingw64/bin/g++.exe",
+			"args": [
+				"-g",
+				"${file}",
+				"-o",
+				"${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe",
+				"-IC:/SDL2/SDL2-devel-2.0.12-mingw/SDL2-2.0.12/x86_64-w64-mingw32/include",
+				"-LC:/SDL2/SDL2-devel-2.0.12-mingw/SDL2-2.0.12/x86_64-w64-mingw32/lib",
+				"-I${workspaceFolder}\\include",
+				"-L${workspaceFolder}\\lib",
+				"${workspaceFolder}\\src\\glad.c",
+				"-lmingw32",
+				"-lSDL2main",
+				"-lSDL2",
+				"-mwindows",
+				"-lglfw3dll"
+			],
+			"options": {
+				"cwd": "C:\\Program Files\\mingw-w64\\x86_64-8.1.0-win32-seh-rt_v6-rev0\\mingw64\\bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compilador: \"C:/Program Files\\mingw-w64\\x86_64-8.1.0-win32-seh-rt_v6-rev0\\mingw64\\bin\\g++.exe\""
+		}
+	]
+}

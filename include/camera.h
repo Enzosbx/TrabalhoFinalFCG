@@ -1,0 +1,53 @@
+#ifndef _CAMERA_H
+#define _CAMERA_H
+
+
+#pragma once
+
+#include <iostream>
+#include <cstdlib>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include "matrices.h"
+
+// Informações iniciais da camera
+
+float g_ScreenRatio = 1.0f; 
+float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
+float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
+float g_CameraDistance = 3.5f; // Distância da câmera para a origem
+
+
+// Computamos a posição da câmera utilizando coordenadas esféricas.  As
+        // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
+        // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
+        // e ScrollCallback().
+
+glm::mat4 defineView(glm::mat4 view) {
+
+    float r = g_CameraDistance;
+    float y = r*sin(g_CameraPhi);
+    float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
+    float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
+    
+    glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+
+    
+        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+        // Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
+        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
+        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+        view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+
+
+       return view;
+
+}
+
+
+#endif
+
+
+
+

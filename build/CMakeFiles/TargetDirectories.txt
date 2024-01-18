@@ -1,0 +1,3 @@
+C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/edit_cache.dir
+C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/main.dir
+C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build/CMakeFiles/rebuild_cache.dir
