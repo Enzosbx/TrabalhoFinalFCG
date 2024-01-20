@@ -157,6 +157,7 @@ int main(int argc, char* argv[])
         std::exit(EXIT_FAILURE);
     }
 
+
     // Definimos a função de callback que será chamada sempre que o usuário
     // pressionar alguma tecla do teclado ...
     glfwSetKeyCallback(window, KeyCallback);
@@ -242,7 +243,13 @@ int main(int argc, char* argv[])
         // definir o sistema de coordenadas da câmera. 
         glm::mat4 view;
          
-        view = defineView(view);
+        if(g_UseLookAtCamera) {                 // Look At Camera
+          view = defineViewLACam(view);
+        }
+        else {                              // Free Camera
+          view = defineViewFCam(view);
+        }
+
 
         // Agora computamos a matriz de Projeção.
         glm::mat4 projection;

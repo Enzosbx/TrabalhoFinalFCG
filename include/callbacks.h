@@ -38,6 +38,10 @@ float g_AngleZ = 0.0f;
 
 
 
+bool w_key_pressed = false;
+bool a_key_pressed = false;
+bool s_key_pressed = false;
+bool d_key_pressed = false;
 
 
 // As entradas de todas as funções de callback widht, height, button e action são dadas pelo usuário
@@ -259,6 +263,69 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     if (key == GLFW_KEY_O && action == GLFW_PRESS)
     {
         g_UsePerspectiveProjection = false;
+    }
+
+    if (key == GLFW_KEY_L && action == GLFW_PRESS) 
+    {
+        g_UseLookAtCamera = true;
+    }
+
+     if (key == GLFW_KEY_F && action == GLFW_PRESS) 
+    {
+        g_UseLookAtCamera = false;
+    }
+
+
+     if (key == GLFW_KEY_W && action == (GLFW_PRESS || GLFW_REPEAT)) 
+    {
+ //        w_key_pressed = true;
+         camera_movement += -w_vector * camera_speed;
+    }
+
+     if (key == GLFW_KEY_W && action == GLFW_RELEASE) 
+    {
+   //      w_key_pressed = false;
+          camera_movement += 0;
+    }
+
+    
+     if (key == GLFW_KEY_A && action == (GLFW_PRESS || GLFW_REPEAT))
+    {
+      //   a_key_pressed = true;
+          camera_movement += -u_vector * camera_speed;
+
+    }
+
+     if (key == GLFW_KEY_A && action == GLFW_RELEASE) 
+    {
+      //   a_key_pressed = false;
+          camera_movement += 0;
+    }
+
+     
+     if (key == GLFW_KEY_S && action == (GLFW_PRESS || GLFW_REPEAT))
+    {
+        camera_movement += w_vector * camera_speed;
+      //  s_key_pressed = true;
+    }
+
+     if (key == GLFW_KEY_S && action == GLFW_RELEASE) 
+    {
+       //  s_key_pressed = false;
+         camera_movement += 0;
+    }
+
+     
+     if (key == GLFW_KEY_D && action == (GLFW_PRESS || GLFW_REPEAT))
+    {
+        camera_movement += u_vector * camera_speed;
+       //  d_key_pressed = true;
+    }
+
+     if (key == GLFW_KEY_D && action == GLFW_RELEASE) 
+    {
+        // d_key_pressed = false;
+        camera_movement += 0;
     }
 
      
