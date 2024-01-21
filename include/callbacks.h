@@ -12,37 +12,31 @@
 #include "camera.h"
 #include "shaders.h"
 
-
 // Funções callback para comunicação com o sistema operacional e interação do
 // usuário. Veja mais comentários nas definições das mesmas, abaixo.
 
-void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
-void ErrorCallback(int error, const char* description);
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
-void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
-void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
-void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-
+void FramebufferSizeCallback(GLFWwindow *window, int width, int height);
+void ErrorCallback(int error, const char *description);
+void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
+void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+void CursorPosCallback(GLFWwindow *window, double xpos, double ypos);
+void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 
 // "g_LeftMouseButtonPressed = true" se o usuário está com o botão esquerdo do mouse
 // pressionado no momento atual. Veja função MouseButtonCallback().
 bool g_LeftMouseButtonPressed = false;
-bool g_RightMouseButtonPressed = false; // Análogo para botão direito do mouse
+bool g_RightMouseButtonPressed = false;  // Análogo para botão direito do mouse
 bool g_MiddleMouseButtonPressed = false; // Análogo para botão do meio do mouse
-
 
 // Ângulos de Euler que controlam a rotação de um dos objetos
 float g_AngleX = 0.0f;
 float g_AngleY = 0.0f;
 float g_AngleZ = 0.0f;
 
-
-
 bool w_key_pressed = false;
 bool a_key_pressed = false;
 bool s_key_pressed = false;
 bool d_key_pressed = false;
-
 
 // As entradas de todas as funções de callback widht, height, button e action são dadas pelo usuário
 // conforme ele faz as ações (se apertar o botao esquerdo do mouse, button = left e action = press)
@@ -51,7 +45,7 @@ bool d_key_pressed = false;
 // Definição da função que será chamada sempre que a janela do sistema
 // operacional for redimensionada, por consequência alterando o tamanho do
 // "framebuffer" (região de memória onde são armazenados os pixels da imagem).
-void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
+void FramebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
     // Indicamos que queremos renderizar em toda região do framebuffer. A
     // função "glViewport" define o mapeamento das "normalized device
@@ -74,7 +68,7 @@ void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 double g_LastCursorPosX, g_LastCursorPosY;
 
 // Função callback chamada sempre que o usuário aperta algum dos botões do mouse
-void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
@@ -128,7 +122,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 
 // Função callback chamada sempre que o usuário movimentar o cursor do mouse em
 // cima da janela OpenGL.
-void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
+void CursorPosCallback(GLFWwindow *window, double xpos, double ypos)
 {
     // Abaixo executamos o seguinte: caso o botão esquerdo do mouse esteja
     // pressionado, computamos quanto que o mouse se movimento desde o último
@@ -143,11 +137,11 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         float dy = ypos - g_LastCursorPosY;
 
         // Atualizamos parâmetros da câmera com os deslocamentos
-        g_CameraTheta -= 0.01f*dx;
-        g_CameraPhi   += 0.01f*dy;
+        g_CameraTheta -= 0.01f * dx;
+        g_CameraPhi += 0.01f * dy;
 
         // Em coordenadas esféricas, o ângulo phi deve ficar entre -pi/2 e +pi/2.
-        float phimax = 3.141592f/2;
+        float phimax = 3.141592f / 2;
         float phimin = -phimax;
 
         if (g_CameraPhi > phimax)
@@ -168,7 +162,6 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
         float dx = xpos - g_LastCursorPosX;
         float dy = ypos - g_LastCursorPosY;
 
-
         // Atualizamos as variáveis globais para armazenar a posição atual do
         // cursor como sendo a última posição conhecida do cursor.
         g_LastCursorPosX = xpos;
@@ -188,12 +181,17 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
     }
 }
 
+float norm2D()
+{
+    return 1/(cos(asin(w_vector.y)));
+}
+
 // Função callback chamada sempre que o usuário movimenta a "rodinha" do mouse.
-void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+void ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 {
     // Atualizamos a distância da câmera para a origem utilizando a
     // movimentação da "rodinha", simulando um ZOOM.
-    g_CameraDistance -= 0.1f*yoffset;
+    g_CameraDistance -= 0.1f * yoffset;
 
     // Uma câmera look-at nunca pode estar exatamente "em cima" do ponto para
     // onde ela está olhando, pois isto gera problemas de divisão por zero na
@@ -207,7 +205,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 // Definição da função que será chamada sempre que o usuário pressionar alguma
 // tecla do teclado. Veja http://www.glfw.org/docs/latest/input_guide.html#input_key
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
+void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
 {
     // ===================
     // Não modifique este loop! Ele é utilizando para correção automatizada dos
@@ -265,94 +263,85 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         g_UsePerspectiveProjection = false;
     }
 
-    if (key == GLFW_KEY_L && action == GLFW_PRESS) 
+    if (key == GLFW_KEY_L && action == GLFW_PRESS)
     {
         g_UseLookAtCamera = true;
     }
 
-     if (key == GLFW_KEY_F && action == GLFW_PRESS) 
+    if (key == GLFW_KEY_F && action == GLFW_PRESS)
     {
         g_UseLookAtCamera = false;
     }
 
-
-     if (key == GLFW_KEY_W && action == (GLFW_PRESS || GLFW_REPEAT)) 
+    if ((key == GLFW_KEY_W && action == (GLFW_PRESS || GLFW_REPEAT)) || w_key_pressed == true)
     {
- //        w_key_pressed = true;
-         camera_movement += -w_vector * camera_speed;
+        w_key_pressed = true;
+        //camera_movement += -w_vector * camera_speed;
     }
 
-     if (key == GLFW_KEY_W && action == GLFW_RELEASE) 
+    if (key == GLFW_KEY_W && action == GLFW_RELEASE)
     {
-   //      w_key_pressed = false;
-          camera_movement += 0;
-    }
-
-    
-     if (key == GLFW_KEY_A && action == (GLFW_PRESS || GLFW_REPEAT))
-    {
-      //   a_key_pressed = true;
-          camera_movement += -u_vector * camera_speed;
-
-    }
-
-     if (key == GLFW_KEY_A && action == GLFW_RELEASE) 
-    {
-      //   a_key_pressed = false;
-          camera_movement += 0;
-    }
-
-     
-     if (key == GLFW_KEY_S && action == (GLFW_PRESS || GLFW_REPEAT))
-    {
-        camera_movement += w_vector * camera_speed;
-      //  s_key_pressed = true;
-    }
-
-     if (key == GLFW_KEY_S && action == GLFW_RELEASE) 
-    {
-       //  s_key_pressed = false;
-         camera_movement += 0;
-    }
-
-     
-     if (key == GLFW_KEY_D && action == (GLFW_PRESS || GLFW_REPEAT))
-    {
-        camera_movement += u_vector * camera_speed;
-       //  d_key_pressed = true;
-    }
-
-     if (key == GLFW_KEY_D && action == GLFW_RELEASE) 
-    {
-        // d_key_pressed = false;
+        w_key_pressed = false;
         camera_movement += 0;
     }
 
-     
-     /*     --> A principio nao teremos texto!!
-    // Se o usuário apertar a tecla H, fazemos um "toggle" do texto informativo mostrado na tela.
-    if (key == GLFW_KEY_H && action == GLFW_PRESS)
+    if (key == GLFW_KEY_A && action == (GLFW_PRESS || GLFW_REPEAT) || a_key_pressed == true)
     {
-        g_ShowInfoText = !g_ShowInfoText;
+        a_key_pressed = true;
+        //camera_movement += -u_vector * camera_speed;
     }
-    */
 
-    
+    if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+    {
+        a_key_pressed = false;
+        camera_movement += 0;
+    }
+
+    if (key == GLFW_KEY_S && action == (GLFW_PRESS || GLFW_REPEAT) || s_key_pressed == true)
+    {
+        //camera_movement += w_vector * camera_speed;
+        s_key_pressed = true;
+    }
+
+    if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+    {
+        s_key_pressed = false;
+        camera_movement += 0;
+    }
+
+    if (key == GLFW_KEY_D && action == (GLFW_PRESS || GLFW_REPEAT) || d_key_pressed == true)
+    {
+        //camera_movement += u_vector * camera_speed;
+        d_key_pressed = true;
+    }
+
+    if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+    {
+        d_key_pressed = false;
+        camera_movement += 0;
+    }
+
+    /*     --> A principio nao teremos texto!!
+   // Se o usuário apertar a tecla H, fazemos um "toggle" do texto informativo mostrado na tela.
+   if (key == GLFW_KEY_H && action == GLFW_PRESS)
+   {
+       g_ShowInfoText = !g_ShowInfoText;
+   }
+   */
+
     // Se o usuário apertar a tecla R, recarregamos os shaders dos arquivos "shader_fragment.glsl" e "shader_vertex.glsl".
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
     {
         LoadShadersFromFiles();
-        fprintf(stdout,"Shaders recarregados!\n");
+        fprintf(stdout, "Shaders recarregados!\n");
         fflush(stdout);
     }
-    
 }
 
 // Definimos o callback para impressão de erros da GLFW no terminal
-void ErrorCallback(int error, const char* description)
+void ErrorCallback(int error, const char *description)
 {
     fprintf(stderr, "ERROR: GLFW: %s\n", description);
 }
-
 
 #endif // _CALLBACKS_
