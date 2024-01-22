@@ -193,6 +193,10 @@ int main(int argc, char *argv[])
     ComputeNormals(&stonemodel);
     BuildTrianglesAndAddToVirtualScene(&stonemodel);
 
+    ObjModel planemodel("../../data/plane.obj");
+    ComputeNormals(&planemodel);
+    BuildTrianglesAndAddToVirtualScene(&planemodel);
+
     if (argc > 1)
     {
         ObjModel model(argv[1]);
@@ -233,19 +237,27 @@ int main(int argc, char *argv[])
 
         if (w_key_pressed == true)
         {
-            camera_movement += glm::vec4{-w_vector.x*norm2D(), 0.0f, -w_vector.z*norm2D(), w_vector.w} * camera_speed;
+       //     camera_movement += glm::vec4{-w_vector.x*norm2D(), 0.0f, -w_vector.z*norm2D(), w_vector.w} * camera_speed;
+              camera_movement += -w_vector * camera_speed;
+
         }
         if (a_key_pressed == true)
         {
-            camera_movement += -u_vector * camera_speed;
+        //    camera_movement += -u_vector * camera_speed;
+              camera_movement += -u_vector * camera_speed;
+
         }
         if (s_key_pressed == true)
         {
-            camera_movement += glm::vec4{w_vector.x*norm2D(), 0.0f, w_vector.z*norm2D(), w_vector.w} * camera_speed;
+        //    camera_movement += glm::vec4{w_vector.x*norm2D(), 0.0f, w_vector.z*norm2D(), w_vector.w} * camera_speed;
+              camera_movement += w_vector * camera_speed;
+
         }
         if (d_key_pressed == true)
         {
-            camera_movement += u_vector * camera_speed;
+       //     camera_movement += u_vector * camera_speed;
+              camera_movement += u_vector * camera_speed;
+
         }
 
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
@@ -267,7 +279,7 @@ int main(int argc, char *argv[])
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo!
         float nearplane = -0.1f; // Posição do "near plane"
-        float farplane = -10.0f; // Posição do "far plane"
+        float farplane = -30.0f; // Posição do "far plane"
 
         projection = defineProjection(projection, nearplane, farplane);
 
@@ -279,6 +291,7 @@ int main(int argc, char *argv[])
         glUniformMatrix4fv(g_view_uniform, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(g_projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
 
+#define PLANE 0
 #define STONE_EYES 1
 #define STONE_HANDS_LEGS 2
 #define STONE_HEAD 3
@@ -307,6 +320,14 @@ int main(int argc, char *argv[])
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, STONE_TORSO);
         DrawVirtualObject("torso.001_ice.005");
+
+        // Desenhamos o modelo do plano
+
+        model = Matrix_Translate(0.0f,-5.15f,0.0f)
+                * Matrix_Scale(15.0f,0.0f,15.0f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, PLANE);
+        DrawVirtualObject("the_plane");
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário

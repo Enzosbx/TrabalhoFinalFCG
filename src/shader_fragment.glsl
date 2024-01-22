@@ -13,6 +13,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 // Identificador que define qual objeto está sendo desenhado no momento
+#define PLANE 0
 #define STONE_EYES  1
 #define STONE_HANDS_LEGS  2
 #define STONE_HEAD  3
@@ -47,8 +48,16 @@ void main()
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
 
-    // Vetor que define o sentido da reflexão especular ideal.
+
+    // Caso queiramos que a fonte de luz seja a câmera, basta descomentar a linha abaixo
+     // sentido da fonte de luz = sentido da cÂmera!
+
+    // l = v;    // tarefa 2.1 lab 04
+
+
+    // Vetor que define o sentido da reflexão especular ideal.   // ch
     vec4 r = vec4(0.0,0.0,0.0,0.0); 
+    r = 2 * n * dot(n,l) - l;
 
     // Parâmetros que definem as propriedades espectrais da superfície
     vec3 Kd; // Refletância difusa
@@ -57,35 +66,45 @@ void main()
     float q; // Expoente especular para o modelo de iluminação de Phong
 
  
-    if ( object_id == STONE_EYES )
+    if ( object_id == STONE_EYES )          // Olhos serão especulares   // ch
     {
         Kd = vec3(0.0,0.0,0.0);
-        Ks = vec3(0.0,0.0,0.0);
+        Ks = vec3(1.0,1.0,1.0);
         Ka = vec3(0.0,0.0,0.0);
         q = 1.0;
     }
-    else if ( object_id == STONE_HANDS_LEGS )
+    else if ( object_id == STONE_HANDS_LEGS )   // ch
     {
-        Kd = vec3(0.0,0.0,0.0);
+        Kd = vec3(0.8,0.4,0.08);  // Superfície 100% difusa, com refletância no modelo RGB = (0.8, 0.4, 0.08)
         Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.4,0.2,0.04);
         q = 1.0;
     }
-    else if ( object_id == STONE_HEAD )
+    else if ( object_id == STONE_HEAD )   // ch
     {
-        Kd = vec3(0.0,0.0,0.0);
+        Kd = vec3(0.8,0.4,0.08); 
         Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.4,0.2,0.04);
         q = 1.0;
     }
-    else if ( object_id == STONE_TORSO )
+    else if ( object_id == STONE_TORSO )   // ch
     {
-        Kd = vec3(0.0,0.0,0.0);
+        Kd = vec3(0.8,0.4,0.08); 
         Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.4,0.2,0.04);
         q = 1.0;
     }
-    else // Objeto desconhecido = preto
+
+   else if ( object_id == PLANE )   // ch
+    {
+        Kd = vec3(0.1,0.6,0.8); 
+        Ks = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.05,0.3,0.4);
+        q = 1.0;
+    }
+
+
+    else // Objeto desconhecido = preto  // ch 
     {
         Kd = vec3(0.0,0.0,0.0);
         Ks = vec3(0.0,0.0,0.0);
@@ -94,19 +113,51 @@ void main()
     }
 
     // Espectro da fonte de iluminação
-    vec3 I = vec3(0.0,0.0,0.0); 
+    vec3 I = vec3(1.0,1.0,1.0);            // ch 
+
+
+                  // tarefa 2.2 lab 4   --> falta atualizar para a lógica do jogo
+
+    /*
+
+
+    vec4 pos_spotlight = vec4(0.0f,2.0f,1.0f,1.0f);   // Posição da fonte spotlight
+    vec4 dir_vect_spotlight = vec4(0.0f,-1.0f,0.0f,0.0f);                          // Vetor de direção da fonte spotlifgt
+    float opening_angle = radians(30.0f);
+
+    vec4 normalized_pvector = normalize(p - pos_spotlight);
+    vec4 normalized_v = normalize(dir_vect_spotlight);
+
+
+    float beta_cossine = dot(normalized_pvector, normalized_v);
+    float alfa_cossine = cos(opening_angle);  // devemos dividir por 2, conforme a imagem do slide 211?? Se dividirmos fica diferente do resultado esperado pelo prof
+
+    if (alfa_cossine > beta_cossine) {
+        I = vec3(0.0,0.0,0.0);
+    }
+
+    */
+
+    
+
 
     // Espectro da luz ambiente
-    vec3 Ia = vec3(0.0,0.0,0.0); 
+    vec3 Ia = vec3(0.2,0.2,0.2);        // ch
 
     // Termo difuso utilizando a lei dos cossenos de Lambert
     vec3 lambert_diffuse_term = vec3(0.0,0.0,0.0); 
+    lambert_diffuse_term = Kd * I * max (0, dot(n,l));
+
 
     // Termo ambiente
     vec3 ambient_term = vec3(0.0,0.0,0.0); 
+    ambient_term = Ka * Ia;
+
 
     // Termo especular utilizando o modelo de iluminação de Phong
     vec3 phong_specular_term  = vec3(0.0,0.0,0.0); 
+    phong_specular_term = Ks * I * pow (max (0, dot(r,v)) , q);
+
 
     // NOTE: Se você quiser fazer o rendering de objetos transparentes, é
     // necessário:

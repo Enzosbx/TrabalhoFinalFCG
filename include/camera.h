@@ -16,7 +16,7 @@
 float g_ScreenRatio = 1.0f; 
 float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
-float g_CameraDistance = 3.5f; // Distância da câmera para a origem
+float g_CameraDistance = 10.5f; // Distância da câmera para a origem
 
 
 bool g_UseLookAtCamera = true;
