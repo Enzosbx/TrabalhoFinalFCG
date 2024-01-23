@@ -18,6 +18,8 @@ uniform mat4 projection;
 #define STONE_HANDS_LEGS  2
 #define STONE_HEAD  3
 #define STONE_TORSO  4
+#define REAPER 5
+#define SCORPION 6
 
 uniform int object_id;
 
@@ -52,7 +54,7 @@ void main()
     // Caso queiramos que a fonte de luz seja a câmera, basta descomentar a linha abaixo
      // sentido da fonte de luz = sentido da cÂmera!
 
-    // l = v;    // tarefa 2.1 lab 04
+   // l = v;    // tarefa 2.1 lab 04
 
 
     // Vetor que define o sentido da reflexão especular ideal.   // ch
@@ -68,9 +70,9 @@ void main()
  
     if ( object_id == STONE_EYES )          // Olhos serão especulares   // ch
     {
-        Kd = vec3(0.0,0.0,0.0);
-        Ks = vec3(1.0,1.0,1.0);
-        Ka = vec3(0.0,0.0,0.0);
+        Kd = vec3(1.0,0.0,0.0);
+        Ks = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.5,0.0,0.0);
         q = 1.0;
     }
     else if ( object_id == STONE_HANDS_LEGS )   // ch
@@ -89,9 +91,9 @@ void main()
     }
     else if ( object_id == STONE_TORSO )   // ch
     {
-        Kd = vec3(0.8,0.4,0.08); 
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.4,0.2,0.04);
+        Kd = vec3(0.0,0.0,0.0); 
+        Ks = vec3(1.0,1.0,1.0);
+        Ka = vec3(0.0,0.0,0.0);
         q = 1.0;
     }
 
@@ -103,6 +105,22 @@ void main()
         q = 1.0;
     }
 
+    else if ( object_id == REAPER )   // ch
+    {
+        Kd = vec3(0.1,0.1,0.4); 
+        Ks = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.05,0.05,0.2);
+        q = 1.0;
+    }
+
+    
+    else if ( object_id == SCORPION )   // ch
+    {
+        Kd = vec3(0.8,0.1,0.1); 
+        Ks = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.4,0.05,0.05);
+        q = 1.0;
+    }
 
     else // Objeto desconhecido = preto  // ch 
     {

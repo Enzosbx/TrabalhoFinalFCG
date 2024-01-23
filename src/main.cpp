@@ -94,6 +94,7 @@ struct ObjModel
 void BuildTrianglesAndAddToVirtualScene(ObjModel *); // Constrói representação de um ObjModel como malha de triângulos para renderização
 void ComputeNormals(ObjModel *model);                // Computa normais de um ObjModel, caso não existam.
 void DrawVirtualObject(const char *object_name);     // Desenha um objeto armazenado em g_VirtualScene
+void DrawGolemInstance (float x, float y, float z, const char* obj_name, int obj_def);  // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
 
 void PrintObjModelInfo(ObjModel *); // Função para debugging  // essa precisa ficar na main
 
@@ -143,7 +144,7 @@ int main(int argc, char *argv[])
     // Criamos uma janela do sistema operacional, com 800 colunas e 600 linhas
     // de pixels, e com título "INF01047 ...".
     GLFWwindow *window;
-    window = glfwCreateWindow(800, 600, "TrabFinal INF01047 - Enzo e Geancarlo", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "TrabFinal INF01047 - Enzo SBX e Geancarlo K", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -196,6 +197,21 @@ int main(int argc, char *argv[])
     ObjModel planemodel("../../data/plane.obj");
     ComputeNormals(&planemodel);
     BuildTrianglesAndAddToVirtualScene(&planemodel);
+
+    ObjModel scorpionmodel("../../data/Scorpion.OBJ");
+    ComputeNormals(&scorpionmodel);
+    BuildTrianglesAndAddToVirtualScene(&scorpionmodel);
+
+    ObjModel reapermodel("../../data/Reaper.obj");
+    ComputeNormals(&reapermodel);
+    BuildTrianglesAndAddToVirtualScene(&reapermodel);
+
+    /*
+    ObjModel scarecrowmodel("../../data/Scarecrow.obj");
+    ComputeNormals(&scarecrowmodel);
+    BuildTrianglesAndAddToVirtualScene(&scarecrowmodel);
+    */
+
 
     if (argc > 1)
     {
@@ -279,7 +295,7 @@ int main(int argc, char *argv[])
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo!
         float nearplane = -0.1f; // Posição do "near plane"
-        float farplane = -30.0f; // Posição do "far plane"
+        float farplane = -50.0f; // Posição do "far plane"
 
         projection = defineProjection(projection, nearplane, farplane);
 
@@ -296,38 +312,51 @@ int main(int argc, char *argv[])
 #define STONE_HANDS_LEGS 2
 #define STONE_HEAD 3
 #define STONE_TORSO 4
+#define REAPER 5
+#define SCORPION 6
 
-        // Desenhamos o modelo do gigante de pedra
-        model = Matrix_Translate(0.0f, -5.0f, -5.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, STONE_EYES);
-        DrawVirtualObject("eyes_Esfera.007");
 
-        // Desenhamos o modelo do gigante de pedra
-        model = Matrix_Translate(0.0f, -5.0f, -5.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, STONE_HANDS_LEGS);
-        DrawVirtualObject("hands&leg.001_ice.003");
-
-        // Desenhamos o modelo do gigante de pedra
-        model = Matrix_Translate(0.0f, -5.0f, -5.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, STONE_HEAD);
-        DrawVirtualObject("head.001_ice.004");
-
-        // Desenhamos o modelo do gigante de pedra
-        model = Matrix_Translate(0.0f, -5.0f, -5.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, STONE_TORSO);
-        DrawVirtualObject("torso.001_ice.005");
-
+       DrawGolemInstance(0.0f, -5.0f, -5.0f, "eyes_Esfera.007", 1);
+       DrawGolemInstance(0.0f, -5.0f, -5.0f, "hands&leg.001_ice.003", 2);
+       DrawGolemInstance(0.0f, -5.0f, -5.0f, "head.001_ice.004", 3);
+       DrawGolemInstance(0.0f, -5.0f, -5.0f, "torso.001_ice.005", 4);
+       DrawGolemInstance(0.0f, -5.0f,  5.0f, "eyes_Esfera.007", 1);
+       DrawGolemInstance(0.0f, -5.0f,  5.0f, "hands&leg.001_ice.003", 2);
+       DrawGolemInstance(0.0f, -5.0f,  5.0f, "head.001_ice.004", 3);
+       DrawGolemInstance(0.0f, -5.0f,  5.0f, "torso.001_ice.005", 4);
+       DrawGolemInstance(5.0f, -5.0f,  0.0f, "eyes_Esfera.007", 1);
+       DrawGolemInstance(5.0f, -5.0f,  0.0f, "hands&leg.001_ice.003", 2);
+       DrawGolemInstance(5.0f, -5.0f,  0.0f, "head.001_ice.004", 3);
+       DrawGolemInstance(5.0f, -5.0f,  0.0f, "torso.001_ice.005", 4);
+       DrawGolemInstance(-5.0f, -5.0f,  0.0f, "eyes_Esfera.007", 1 );
+       DrawGolemInstance(-5.0f, -5.0f,  0.0f, "hands&leg.001_ice.003", 2);
+       DrawGolemInstance(-5.0f, -5.0f,  0.0f, "head.001_ice.004", 3);
+       DrawGolemInstance(-5.0f, -5.0f,  0.0f, "torso.001_ice.005", 4);
+     
         // Desenhamos o modelo do plano
 
-        model = Matrix_Translate(0.0f,-5.15f,0.0f)
-                * Matrix_Scale(15.0f,0.0f,15.0f);
+        model = Matrix_Translate(0.0f,-5.0f,0.0f)
+                * Matrix_Scale(30.0f,0.0f,30.0f);
         glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, PLANE);
         DrawVirtualObject("the_plane");
+
+        // Desenhamos o modelo do reaper
+
+
+        model = Matrix_Translate(12.0f,-5.0f,0.0f) * Matrix_Rotate_X(-1.5708f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, REAPER);
+        DrawVirtualObject("17034_grim_reaper");
+
+        // Desenhamos o modelo do escorpiao
+
+        model = Matrix_Translate(-12.0f,-5.0f,0.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Rotate_Z(-3.14159f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, SCORPION);
+        DrawVirtualObject("Group61355");
+
+
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
@@ -761,3 +790,12 @@ void PrintObjModelInfo(ObjModel *model)
         printf("\n");
     }
 }
+
+
+void DrawGolemInstance (float x, float y, float z, const char* obj_name, int obj_def ) {
+        glm::mat4 model = Matrix_Translate(x, y, z) * Matrix_Scale(0.6f,0.6f,1.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, obj_def);
+        DrawVirtualObject(obj_name);
+            return;
+        }
