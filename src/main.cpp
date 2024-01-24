@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <stdio.h>
 
 // Headers abaixo são específicos de C++
 #include <map>
@@ -32,6 +33,7 @@
 #include "callbacks.h"
 #include "shaders.h"
 #include "text.h"
+#define DimLab 19
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
@@ -91,10 +93,10 @@ struct ObjModel
     }
 };
 
-void BuildTrianglesAndAddToVirtualScene(ObjModel *); // Constrói representação de um ObjModel como malha de triângulos para renderização
-void ComputeNormals(ObjModel *model);                // Computa normais de um ObjModel, caso não existam.
-void DrawVirtualObject(const char *object_name);     // Desenha um objeto armazenado em g_VirtualScene
-void DrawGolemInstance (float x, float y, float z, const char* obj_name, int obj_def);  // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
+void BuildTrianglesAndAddToVirtualScene(ObjModel *);                                  // Constrói representação de um ObjModel como malha de triângulos para renderização
+void ComputeNormals(ObjModel *model);                                                 // Computa normais de um ObjModel, caso não existam.
+void DrawVirtualObject(const char *object_name);                                      // Desenha um objeto armazenado em g_VirtualScene
+void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def); // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
 
 void PrintObjModelInfo(ObjModel *); // Função para debugging  // essa precisa ficar na main
 
@@ -115,10 +117,52 @@ struct SceneObject
 // estes são acessados.
 std::map<std::string, SceneObject> g_VirtualScene;
 
+int Labirinto[DimLab][DimLab];
+void drawMap()
+{
+    /*for (int i = 0; i < DimLab; i++)
+    {
+        for (int j = 0; j < DimLab; j++)
+        {
+            model = Matrix_Translate(4.0f*i, 5.0f*Labirinto[i][j], 4.0f*j) * Matrix_Scale(2.0f, 1.0f, 1.0f) * Matrix_Identity();
+        }
+    }*/
+}
+
 int main(int argc, char *argv[])
 {
     // Inicializamos a biblioteca GLFW, utilizada para criar uma janela do
     // sistema operacional, onde poderemos renderizar com OpenGL.
+
+    FILE *arquivo;
+    // Abre o arquivo usando um caminho relativo.
+    arquivo = fopen("../../labirinto.txt", "r");
+
+    // Verifica se a abertura do arquivo foi bem-sucedida.
+    if (arquivo == NULL)
+    {
+        printf("Não foi possível abrir o arquivo.\n");
+        return 1; // Retorna um código de erro.
+    }
+
+    for (int i = 0; i < DimLab; i++)
+    {
+        for (int j = 0; j < DimLab; j++)
+        {
+            char c = fgetc(arquivo);
+            switch (c)
+            {
+            case 'X':
+                Labirinto[i][j] = 1;
+                break;
+            case ' ':
+                Labirinto[i][j] = 0;
+                break;
+            }
+        }
+        fgetc(arquivo); // quebra de linha
+    }
+    fclose(arquivo);
     int success = glfwInit();
     if (!success)
     {
@@ -212,7 +256,6 @@ int main(int argc, char *argv[])
     BuildTrianglesAndAddToVirtualScene(&scarecrowmodel);
     */
 
-
     if (argc > 1)
     {
         ObjModel model(argv[1]);
@@ -253,27 +296,23 @@ int main(int argc, char *argv[])
 
         if (w_key_pressed == true)
         {
-       //     camera_movement += glm::vec4{-w_vector.x*norm2D(), 0.0f, -w_vector.z*norm2D(), w_vector.w} * camera_speed;
-              camera_movement += -w_vector * camera_speed;
-
+            //     camera_movement += glm::vec4{-w_vector.x*norm2D(), 0.0f, -w_vector.z*norm2D(), w_vector.w} * camera_speed;
+            camera_movement += -w_vector * camera_speed;
         }
         if (a_key_pressed == true)
         {
-        //    camera_movement += -u_vector * camera_speed;
-              camera_movement += -u_vector * camera_speed;
-
+            //    camera_movement += -u_vector * camera_speed;
+            camera_movement += -u_vector * camera_speed;
         }
         if (s_key_pressed == true)
         {
-        //    camera_movement += glm::vec4{w_vector.x*norm2D(), 0.0f, w_vector.z*norm2D(), w_vector.w} * camera_speed;
-              camera_movement += w_vector * camera_speed;
-
+            //    camera_movement += glm::vec4{w_vector.x*norm2D(), 0.0f, w_vector.z*norm2D(), w_vector.w} * camera_speed;
+            camera_movement += w_vector * camera_speed;
         }
         if (d_key_pressed == true)
         {
-       //     camera_movement += u_vector * camera_speed;
-              camera_movement += u_vector * camera_speed;
-
+            //     camera_movement += u_vector * camera_speed;
+            camera_movement += u_vector * camera_speed;
         }
 
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
@@ -295,12 +334,12 @@ int main(int argc, char *argv[])
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo!
         float nearplane = -0.1f; // Posição do "near plane"
-        float farplane = -50.0f; // Posição do "far plane"
+        float farplane = -100.0f; // Posição do "far plane"
 
         projection = defineProjection(projection, nearplane, farplane);
 
         glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
-
+        drawMap();
         // Enviamos as matrizes "view" e "projection" para a placa de vídeo
         // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
         // efetivamente aplicadas em todos os pontos.
@@ -315,48 +354,43 @@ int main(int argc, char *argv[])
 #define REAPER 5
 #define SCORPION 6
 
+        DrawGolemInstance(0.0f, -5.0f, -5.0f, "eyes_Esfera.007", 1);
+        DrawGolemInstance(0.0f, -5.0f, -5.0f, "hands&leg.001_ice.003", 2);
+        DrawGolemInstance(0.0f, -5.0f, -5.0f, "head.001_ice.004", 3);
+        DrawGolemInstance(0.0f, -5.0f, -5.0f, "torso.001_ice.005", 4);
+        DrawGolemInstance(0.0f, -5.0f, 5.0f, "eyes_Esfera.007", 1);
+        DrawGolemInstance(0.0f, -5.0f, 5.0f, "hands&leg.001_ice.003", 2);
+        DrawGolemInstance(0.0f, -5.0f, 5.0f, "head.001_ice.004", 3);
+        DrawGolemInstance(0.0f, -5.0f, 5.0f, "torso.001_ice.005", 4);
+        DrawGolemInstance(5.0f, -5.0f, 0.0f, "eyes_Esfera.007", 1);
+        DrawGolemInstance(5.0f, -5.0f, 0.0f, "hands&leg.001_ice.003", 2);
+        DrawGolemInstance(5.0f, -5.0f, 0.0f, "head.001_ice.004", 3);
+        DrawGolemInstance(5.0f, -5.0f, 0.0f, "torso.001_ice.005", 4);
+        DrawGolemInstance(-5.0f, -5.0f, 0.0f, "eyes_Esfera.007", 1);
+        DrawGolemInstance(-5.0f, -5.0f, 0.0f, "hands&leg.001_ice.003", 2);
+        DrawGolemInstance(-5.0f, -5.0f, 0.0f, "head.001_ice.004", 3);
+        DrawGolemInstance(-5.0f, -5.0f, 0.0f, "torso.001_ice.005", 4);
 
-       DrawGolemInstance(0.0f, -5.0f, -5.0f, "eyes_Esfera.007", 1);
-       DrawGolemInstance(0.0f, -5.0f, -5.0f, "hands&leg.001_ice.003", 2);
-       DrawGolemInstance(0.0f, -5.0f, -5.0f, "head.001_ice.004", 3);
-       DrawGolemInstance(0.0f, -5.0f, -5.0f, "torso.001_ice.005", 4);
-       DrawGolemInstance(0.0f, -5.0f,  5.0f, "eyes_Esfera.007", 1);
-       DrawGolemInstance(0.0f, -5.0f,  5.0f, "hands&leg.001_ice.003", 2);
-       DrawGolemInstance(0.0f, -5.0f,  5.0f, "head.001_ice.004", 3);
-       DrawGolemInstance(0.0f, -5.0f,  5.0f, "torso.001_ice.005", 4);
-       DrawGolemInstance(5.0f, -5.0f,  0.0f, "eyes_Esfera.007", 1);
-       DrawGolemInstance(5.0f, -5.0f,  0.0f, "hands&leg.001_ice.003", 2);
-       DrawGolemInstance(5.0f, -5.0f,  0.0f, "head.001_ice.004", 3);
-       DrawGolemInstance(5.0f, -5.0f,  0.0f, "torso.001_ice.005", 4);
-       DrawGolemInstance(-5.0f, -5.0f,  0.0f, "eyes_Esfera.007", 1 );
-       DrawGolemInstance(-5.0f, -5.0f,  0.0f, "hands&leg.001_ice.003", 2);
-       DrawGolemInstance(-5.0f, -5.0f,  0.0f, "head.001_ice.004", 3);
-       DrawGolemInstance(-5.0f, -5.0f,  0.0f, "torso.001_ice.005", 4);
-     
         // Desenhamos o modelo do plano
 
-        model = Matrix_Translate(0.0f,-5.0f,0.0f)
-                * Matrix_Scale(30.0f,0.0f,30.0f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        model = Matrix_Translate(0.0f, -5.0f, 0.0f) * Matrix_Scale(30.0f, 0.0f, 30.0f);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, PLANE);
         DrawVirtualObject("the_plane");
 
         // Desenhamos o modelo do reaper
 
-
-        model = Matrix_Translate(12.0f,-5.0f,0.0f) * Matrix_Rotate_X(-1.5708f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        model = Matrix_Translate(12.0f, -5.0f, 0.0f) * Matrix_Rotate_X(-1.5708f);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, REAPER);
         DrawVirtualObject("17034_grim_reaper");
 
         // Desenhamos o modelo do escorpiao
 
-        model = Matrix_Translate(-12.0f,-5.0f,0.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Rotate_Z(-3.14159f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        model = Matrix_Translate(-12.0f, -5.0f, 0.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Rotate_Z(-3.14159f);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, SCORPION);
         DrawVirtualObject("Group61355");
-
-
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
@@ -791,11 +825,11 @@ void PrintObjModelInfo(ObjModel *model)
     }
 }
 
-
-void DrawGolemInstance (float x, float y, float z, const char* obj_name, int obj_def ) {
-        glm::mat4 model = Matrix_Translate(x, y, z) * Matrix_Scale(0.6f,0.6f,1.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, obj_def);
-        DrawVirtualObject(obj_name);
-            return;
-        }
+void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def)
+{
+    glm::mat4 model = Matrix_Translate(x, y, z) * Matrix_Scale(0.6f, 0.6f, 1.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
+    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+    glUniform1i(g_object_id_uniform, obj_def);
+    DrawVirtualObject(obj_name);
+    return;
+}
