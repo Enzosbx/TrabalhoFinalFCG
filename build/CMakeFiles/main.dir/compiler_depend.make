@@ -188,6 +188,7 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_heap.h \
   C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_tempbuf.h \
   C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/uniform_int_dist.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/iostream \
   ../include/glad/glad.h \
   C:/Program\ Files/MinGW/include/windows.h \
   C:/Program\ Files/MinGW/include/windef.h \
@@ -393,7 +394,6 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   ../include/utils.h \
   ../include/matrices.h \
   ../include/callbacks.h \
-  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/iostream \
   ../include/projections.h \
   ../include/camera.h \
   ../include/shaders.h \
@@ -1002,6 +1002,8 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_heap.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_tempbuf.h:
 
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/iostream:
+
 ../include/GLFW/glfw3.h:
 
 ../include/glm/mat4x4.hpp:
@@ -1259,8 +1261,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cstring:
 ../include/utils.h:
 
 ../include/callbacks.h:
-
-C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/iostream:
 
 ../include/text.h:
 

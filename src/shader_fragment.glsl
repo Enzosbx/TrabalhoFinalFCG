@@ -54,7 +54,7 @@ void main()
     // Caso queiramos que a fonte de luz seja a câmera, basta descomentar a linha abaixo
      // sentido da fonte de luz = sentido da cÂmera!
 
-   // l = v;    // tarefa 2.1 lab 04
+    l = v;    // tarefa 2.1 lab 04
 
 
     // Vetor que define o sentido da reflexão especular ideal.   // ch

@@ -140,6 +140,7 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\stl_heap.h \
  c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\stl_tempbuf.h \
  c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\uniform_int_dist.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\iostream \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glad/glad.h \
  c:\progra~1\mingw\include\windows.h c:\progra~1\mingw\include\windef.h \
  c:\progra~1\mingw\include\winnt.h c:\progra~1\mingw\include\winerror.h \
@@ -336,7 +337,6 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/matrices.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h \
- c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\iostream \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/projections.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/camera.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/shaders.h \

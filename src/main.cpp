@@ -2,7 +2,6 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <stdio.h>
 
 // Headers abaixo são específicos de C++
 #include <map>
@@ -14,6 +13,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <iostream>
 
 // Headers das bibliotecas OpenGL
 #include <glad/glad.h>  // Criação de contexto OpenGL 3.3
@@ -33,7 +33,10 @@
 #include "callbacks.h"
 #include "shaders.h"
 #include "text.h"
+
 #define DimLab 19
+int Labirinto[DimLab][DimLab];
+
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
@@ -97,6 +100,7 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *);                            
 void ComputeNormals(ObjModel *model);                                                 // Computa normais de um ObjModel, caso não existam.
 void DrawVirtualObject(const char *object_name);                                      // Desenha um objeto armazenado em g_VirtualScene
 void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def); // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
+void drawMap( glm::mat4 model); // Desenha o mapa do jogo
 
 void PrintObjModelInfo(ObjModel *); // Função para debugging  // essa precisa ficar na main
 
@@ -117,17 +121,6 @@ struct SceneObject
 // estes são acessados.
 std::map<std::string, SceneObject> g_VirtualScene;
 
-int Labirinto[DimLab][DimLab];
-void drawMap()
-{
-    /*for (int i = 0; i < DimLab; i++)
-    {
-        for (int j = 0; j < DimLab; j++)
-        {
-            model = Matrix_Translate(4.0f*i, 5.0f*Labirinto[i][j], 4.0f*j) * Matrix_Scale(2.0f, 1.0f, 1.0f) * Matrix_Identity();
-        }
-    }*/
-}
 
 int main(int argc, char *argv[])
 {
@@ -135,13 +128,16 @@ int main(int argc, char *argv[])
     // sistema operacional, onde poderemos renderizar com OpenGL.
 
     FILE *arquivo;
+
     // Abre o arquivo usando um caminho relativo.
-    arquivo = fopen("../../labirinto.txt", "r");
+
+
+    arquivo = fopen("../../labirinto.txt", "r+");
 
     // Verifica se a abertura do arquivo foi bem-sucedida.
     if (arquivo == NULL)
     {
-        printf("Não foi possível abrir o arquivo.\n");
+        printf("Nao foi possivel abrir o arquivo.\n");
         return 1; // Retorna um código de erro.
     }
 
@@ -163,6 +159,8 @@ int main(int argc, char *argv[])
         fgetc(arquivo); // quebra de linha
     }
     fclose(arquivo);
+
+
     int success = glfwInit();
     if (!success)
     {
@@ -339,7 +337,7 @@ int main(int argc, char *argv[])
         projection = defineProjection(projection, nearplane, farplane);
 
         glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
-        drawMap();
+
         // Enviamos as matrizes "view" e "projection" para a placa de vídeo
         // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
         // efetivamente aplicadas em todos os pontos.
@@ -353,6 +351,11 @@ int main(int argc, char *argv[])
 #define STONE_TORSO 4
 #define REAPER 5
 #define SCORPION 6
+
+        // Desenhamos o mapa, com seus cubos
+
+        drawMap(model);
+
 
         DrawGolemInstance(0.0f, -5.0f, -5.0f, "eyes_Esfera.007", 1);
         DrawGolemInstance(0.0f, -5.0f, -5.0f, "hands&leg.001_ice.003", 2);
@@ -370,6 +373,8 @@ int main(int argc, char *argv[])
         DrawGolemInstance(-5.0f, -5.0f, 0.0f, "hands&leg.001_ice.003", 2);
         DrawGolemInstance(-5.0f, -5.0f, 0.0f, "head.001_ice.004", 3);
         DrawGolemInstance(-5.0f, -5.0f, 0.0f, "torso.001_ice.005", 4);
+
+        
 
         // Desenhamos o modelo do plano
 
@@ -412,6 +417,18 @@ int main(int argc, char *argv[])
 
     // Fim do programa
     return 0;
+}
+
+
+void drawMap( glm::mat4 model)
+{
+    for (int i = 0; i < DimLab; i++)
+    {
+        for (int j = 0; j < DimLab; j++)
+        {
+            model = Matrix_Translate(4.0f*i, 5.0f*Labirinto[i][j], 4.0f*j) * Matrix_Scale(2.0f, 1.0f, 1.0f);
+        }
+    }
 }
 
 // Função que desenha um objeto armazenado em g_VirtualScene. Veja definição
