@@ -390,6 +390,7 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   ../include/glm/ext/vector_uint1_precision.hpp \
   C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cstring \
   ../include/glm/gtc/type_ptr.inl \
+  ../include/stb_image.h \
   ../include/tiny_obj_loader.h \
   ../include/utils.h \
   ../include/matrices.h \
@@ -401,7 +402,38 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   ../include/text.h \
   ../include/utils.h \
   ../include/dejavufont.h \
-  ../include/callbacks.h
+  ../include/callbacks.h \
+  ../include/map.h
+
+CMakeFiles/main.dir/src/stb_image.cpp.obj: ../src/stb_image.cpp \
+  ../include/stb_image.h \
+  C:/Program\ Files/MinGW/include/stdio.h \
+  C:/Program\ Files/MinGW/include/_mingw.h \
+  C:/Program\ Files/MinGW/include/msvcrtver.h \
+  C:/Program\ Files/MinGW/include/w32api.h \
+  C:/Program\ Files/MinGW/include/sdkddkver.h \
+  C:/Program\ Files/MinGW/include/features.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/stddef.h \
+  C:/Program\ Files/MinGW/include/sys/types.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/stdarg.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/stdlib.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cstdlib \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/c++config.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/os_defines.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/cpu_defines.h \
+  C:/Program\ Files/MinGW/include/stdlib.h \
+  C:/Program\ Files/MinGW/include/errno.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/std_abs.h \
+  C:/Program\ Files/MinGW/include/string.h \
+  C:/Program\ Files/MinGW/include/limits.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/math.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cmath \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/cpp_type_traits.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ext/type_traits.h \
+  C:/Program\ Files/MinGW/include/math.h \
+  C:/Program\ Files/MinGW/include/assert.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/stdint.h \
+  C:/Program\ Files/MinGW/include/stdint.h
 
 CMakeFiles/main.dir/src/textrendering.cpp.obj: ../src/textrendering.cpp
 
@@ -618,6 +650,10 @@ C:/Program\ Files/MinGW/include/stdlib.h:
 
 C:/Program\ Files/MinGW/include/errno.h:
 
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/math.h:
+
+C:/Program\ Files/MinGW/include/limits.h:
+
 ../include/glm/ext/vector_float1.hpp:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/locale_classes.h:
@@ -659,6 +695,8 @@ C:/Program\ Files/MinGW/include/winnls.h:
 ../include/glad/glad.h:
 
 C:/Program\ Files/MinGW/include/windef.h:
+
+../include/map.h:
 
 ../include/glm/ext/quaternion_double_precision.hpp:
 
@@ -1258,11 +1296,17 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cstring:
 
 ../include/glm/gtc/type_ptr.inl:
 
+../include/text.h:
+
+../include/stb_image.h:
+
 ../include/utils.h:
 
 ../include/callbacks.h:
 
-../include/text.h:
+../src/stb_image.cpp:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/stdlib.h:
 
 ../src/textrendering.cpp:
 

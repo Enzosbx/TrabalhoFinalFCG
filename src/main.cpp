@@ -1,6 +1,7 @@
 
 #include <cmath>
 #include <cstdio>
+#include <stdio.h>
 #include <cstdlib>
 
 // Headers abaixo são específicos de C++
@@ -25,7 +26,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Headers da biblioteca para carregar modelos obj
+#include <stb_image.h>
+
 #include <tiny_obj_loader.h>
+
 
 // Headers locais, definidos na pasta "include/"
 #include "utils.h"
@@ -33,22 +37,20 @@
 #include "callbacks.h"
 #include "shaders.h"
 #include "text.h"
-
-#define DimLab 19
-int Labirinto[DimLab][DimLab];
+#include "map.h"
 
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
 struct ObjModel
 {
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
+    tinyobj::attrib_t                 attrib;
+    std::vector<tinyobj::shape_t>     shapes;
+    std::vector<tinyobj::material_t>  materials;
 
     // Este construtor lê o modelo de um arquivo utilizando a biblioteca tinyobjloader.
     // Veja: https://github.com/syoyo/tinyobjloader
-    ObjModel(const char *filename, const char *basepath = NULL, bool triangulate = true)
+    ObjModel(const char* filename, const char* basepath = NULL, bool triangulate = true)
     {
         printf("Carregando objetos do arquivo \"%s\"...\n", filename);
 
@@ -62,7 +64,7 @@ struct ObjModel
             auto i = fullpath.find_last_of("/");
             if (i != std::string::npos)
             {
-                dirname = fullpath.substr(0, i + 1);
+                dirname = fullpath.substr(0, i+1);
                 basepath = dirname.c_str();
             }
         }
@@ -86,7 +88,7 @@ struct ObjModel
                         "Erro: Objeto sem nome dentro do arquivo '%s'.\n"
                         "Veja https://www.inf.ufrgs.br/~eslgastal/fcg-faq-etc.html#Modelos-3D-no-formato-OBJ .\n"
                         "*********************************************\n",
-                        filename);
+                    filename);
                 throw std::runtime_error("Objeto sem nome.");
             }
             printf("- Objeto '%s'\n", shapes[shape].name.c_str());
@@ -96,11 +98,14 @@ struct ObjModel
     }
 };
 
+
 void BuildTrianglesAndAddToVirtualScene(ObjModel *);                                  // Constrói representação de um ObjModel como malha de triângulos para renderização
 void ComputeNormals(ObjModel *model);                                                 // Computa normais de um ObjModel, caso não existam.
+void LoadTextureImage(const char* filename); // Função que carrega imagens de textura
 void DrawVirtualObject(const char *object_name);                                      // Desenha um objeto armazenado em g_VirtualScene
 void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def); // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
-void drawMap( glm::mat4 model); // Desenha o mapa do jogo
+
+void drawMap(glm::mat4 model); // Desenha o mapa do jogo
 
 void PrintObjModelInfo(ObjModel *); // Função para debugging  // essa precisa ficar na main
 
@@ -113,6 +118,8 @@ struct SceneObject
     size_t num_indices;            // Número de índices do objeto dentro do vetor indices[] definido em BuildTrianglesAndAddToVirtualScene()
     GLenum rendering_mode;         // Modo de rasterização (GL_TRIANGLES, GL_TRIANGLE_STRIP, etc.)
     GLuint vertex_array_object_id; // ID do VAO onde estão armazenados os atributos do modelo
+    glm::vec3    bbox_min;         // Axis-Aligned Bounding Box do objeto
+    glm::vec3    bbox_max;
 };
 
 // A cena virtual é uma lista de objetos nomeados, guardados em um dicionário
@@ -120,6 +127,9 @@ struct SceneObject
 // objetos dentro da variável g_VirtualScene, e veja na função main() como
 // estes são acessados.
 std::map<std::string, SceneObject> g_VirtualScene;
+
+// Número de texturas carregadas pela função LoadTextureImage()
+GLuint g_NumLoadedTextures = 0;
 
 
 int main(int argc, char *argv[])
@@ -129,37 +139,7 @@ int main(int argc, char *argv[])
 
     FILE *arquivo;
 
-    // Abre o arquivo usando um caminho relativo.
-
-
-    arquivo = fopen("../../labirinto.txt", "r+");
-
-    // Verifica se a abertura do arquivo foi bem-sucedida.
-    if (arquivo == NULL)
-    {
-        printf("Nao foi possivel abrir o arquivo.\n");
-        return 1; // Retorna um código de erro.
-    }
-
-    for (int i = 0; i < DimLab; i++)
-    {
-        for (int j = 0; j < DimLab; j++)
-        {
-            char c = fgetc(arquivo);
-            switch (c)
-            {
-            case 'X':
-                Labirinto[i][j] = 1;
-                break;
-            case ' ':
-                Labirinto[i][j] = 0;
-                break;
-            }
-        }
-        fgetc(arquivo); // quebra de linha
-    }
-    fclose(arquivo);
-
+    readMap(arquivo);  // Leitura do arquivo contendo o map
 
     int success = glfwInit();
     if (!success)
@@ -224,6 +204,12 @@ int main(int argc, char *argv[])
     const GLubyte *glslversion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
     printf("GPU: %s, %s, OpenGL %s, GLSL %s\n", vendor, renderer, glversion, glslversion);
+    
+     // Carregamos duas imagens para serem utilizadas como textura
+   
+    LoadTextureImage("../../data/wood-texture.jpg");    // TextureImage0
+    LoadTextureImage("../../data/textura-caveira.jpg");   // TextureImage1  
+
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slides 180-200 do documento Aula_03_Rendering_Pipeline_Grafico.pdf.
@@ -247,6 +233,10 @@ int main(int argc, char *argv[])
     ObjModel reapermodel("../../data/Reaper.obj");
     ComputeNormals(&reapermodel);
     BuildTrianglesAndAddToVirtualScene(&reapermodel);
+
+    ObjModel cubemodel("../../data/cubooo.obj");
+    ComputeNormals(&cubemodel);
+    BuildTrianglesAndAddToVirtualScene(&cubemodel);
 
     /*
     ObjModel scarecrowmodel("../../data/Scarecrow.obj");
@@ -294,23 +284,23 @@ int main(int argc, char *argv[])
 
         if (w_key_pressed == true)
         {
-            //     camera_movement += glm::vec4{-w_vector.x*norm2D(), 0.0f, -w_vector.z*norm2D(), w_vector.w} * camera_speed;
-            camera_movement += -w_vector * camera_speed;
+            camera_movement += glm::vec4{-w_vector.x*norm2D(), 0.0f, -w_vector.z*norm2D(), w_vector.w} * camera_speed;
+           // camera_movement += -w_vector * camera_speed;
         }
         if (a_key_pressed == true)
         {
-            //    camera_movement += -u_vector * camera_speed;
             camera_movement += -u_vector * camera_speed;
+          //  camera_movement += -u_vector * camera_speed;
         }
         if (s_key_pressed == true)
         {
-            //    camera_movement += glm::vec4{w_vector.x*norm2D(), 0.0f, w_vector.z*norm2D(), w_vector.w} * camera_speed;
-            camera_movement += w_vector * camera_speed;
+            camera_movement += glm::vec4{w_vector.x*norm2D(), 0.0f, w_vector.z*norm2D(), w_vector.w} * camera_speed;
+           // camera_movement += w_vector * camera_speed;
         }
         if (d_key_pressed == true)
         {
-            //     camera_movement += u_vector * camera_speed;
             camera_movement += u_vector * camera_speed;
+           // camera_movement += u_vector * camera_speed;
         }
 
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
@@ -332,7 +322,7 @@ int main(int argc, char *argv[])
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo!
         float nearplane = -0.1f; // Posição do "near plane"
-        float farplane = -100.0f; // Posição do "far plane"
+        float farplane = -400.0f; // Posição do "far plane"
 
         projection = defineProjection(projection, nearplane, farplane);
 
@@ -351,51 +341,50 @@ int main(int argc, char *argv[])
 #define STONE_TORSO 4
 #define REAPER 5
 #define SCORPION 6
+#define CUBE 7
 
         // Desenhamos o mapa, com seus cubos
 
         drawMap(model);
 
+        /*
 
-        DrawGolemInstance(0.0f, -5.0f, -5.0f, "eyes_Esfera.007", 1);
-        DrawGolemInstance(0.0f, -5.0f, -5.0f, "hands&leg.001_ice.003", 2);
-        DrawGolemInstance(0.0f, -5.0f, -5.0f, "head.001_ice.004", 3);
-        DrawGolemInstance(0.0f, -5.0f, -5.0f, "torso.001_ice.005", 4);
-        DrawGolemInstance(0.0f, -5.0f, 5.0f, "eyes_Esfera.007", 1);
-        DrawGolemInstance(0.0f, -5.0f, 5.0f, "hands&leg.001_ice.003", 2);
-        DrawGolemInstance(0.0f, -5.0f, 5.0f, "head.001_ice.004", 3);
-        DrawGolemInstance(0.0f, -5.0f, 5.0f, "torso.001_ice.005", 4);
-        DrawGolemInstance(5.0f, -5.0f, 0.0f, "eyes_Esfera.007", 1);
-        DrawGolemInstance(5.0f, -5.0f, 0.0f, "hands&leg.001_ice.003", 2);
-        DrawGolemInstance(5.0f, -5.0f, 0.0f, "head.001_ice.004", 3);
-        DrawGolemInstance(5.0f, -5.0f, 0.0f, "torso.001_ice.005", 4);
-        DrawGolemInstance(-5.0f, -5.0f, 0.0f, "eyes_Esfera.007", 1);
-        DrawGolemInstance(-5.0f, -5.0f, 0.0f, "hands&leg.001_ice.003", 2);
-        DrawGolemInstance(-5.0f, -5.0f, 0.0f, "head.001_ice.004", 3);
-        DrawGolemInstance(-5.0f, -5.0f, 0.0f, "torso.001_ice.005", 4);
+        DrawGolemInstance(0.0f, 0.0f, -5.0f, "eyes_Esfera.007", 1);
+        DrawGolemInstance(0.0f, 0.0f, -5.0f, "hands&leg.001_ice.003", 2);
+        DrawGolemInstance(0.0f, 0.0f, -5.0f, "head.001_ice.004", 3);
+        DrawGolemInstance(0.0f, 0.0f, -5.0f, "torso.001_ice.005", 4);
+        DrawGolemInstance(0.0f, 0.0f, 5.0f, "eyes_Esfera.007", 1);
+        DrawGolemInstance(0.0f, 0.0f, 5.0f, "hands&leg.001_ice.003", 2);
+        DrawGolemInstance(0.0f, 0.0f, 5.0f, "head.001_ice.004", 3);
+        DrawGolemInstance(0.0f, 0.0f, 5.0f, "torso.001_ice.005", 4);
+        DrawGolemInstance(5.0f, 0.0f, 0.0f, "eyes_Esfera.007", 1);
+        DrawGolemInstance(5.0f, 0.0f, 0.0f, "hands&leg.001_ice.003", 2);
+        DrawGolemInstance(5.0f, 0.0f, 0.0f, "head.001_ice.004", 3);
+        DrawGolemInstance(5.0f, 0.0f, 0.0f, "torso.001_ice.005", 4);
+        DrawGolemInstance(-5.0f, 0.0f, 0.0f, "eyes_Esfera.007", 1);
+        DrawGolemInstance(-5.0f, 0.0f, 0.0f, "hands&leg.001_ice.003", 2);
+        DrawGolemInstance(-5.0f, 0.0f, 0.0f, "head.001_ice.004", 3);
+        DrawGolemInstance(-5.0f, 0.0f, 0.0f, "torso.001_ice.005", 4);
 
-        
-
-        // Desenhamos o modelo do plano
-
-        model = Matrix_Translate(0.0f, -5.0f, 0.0f) * Matrix_Scale(30.0f, 0.0f, 30.0f);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, PLANE);
-        DrawVirtualObject("the_plane");
+        */
 
         // Desenhamos o modelo do reaper
 
-        model = Matrix_Translate(12.0f, -5.0f, 0.0f) * Matrix_Rotate_X(-1.5708f);
+        model = Matrix_Translate(50.0f, -17.5f, 100.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Rotate_Z(-1.5708f) * Matrix_Scale(3.0f,3.0f,3.0f);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, REAPER);
         DrawVirtualObject("17034_grim_reaper");
 
+        
+
         // Desenhamos o modelo do escorpiao
 
-        model = Matrix_Translate(-12.0f, -5.0f, 0.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Rotate_Z(-3.14159f);
+        model = Matrix_Translate(0.0f, -16.5f, 80.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(5.0f,5.0f,5.0f);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, SCORPION);
         DrawVirtualObject("Group61355");
+
+        
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
@@ -420,17 +409,6 @@ int main(int argc, char *argv[])
 }
 
 
-void drawMap( glm::mat4 model)
-{
-    for (int i = 0; i < DimLab; i++)
-    {
-        for (int j = 0; j < DimLab; j++)
-        {
-            model = Matrix_Translate(4.0f*i, 5.0f*Labirinto[i][j], 4.0f*j) * Matrix_Scale(2.0f, 1.0f, 1.0f);
-        }
-    }
-}
-
 // Função que desenha um objeto armazenado em g_VirtualScene. Veja definição
 // dos objetos na função BuildTrianglesAndAddToVirtualScene().
 void DrawVirtualObject(const char *object_name)
@@ -439,6 +417,15 @@ void DrawVirtualObject(const char *object_name)
     // vértices apontados pelo VAO criado pela função BuildTrianglesAndAddToVirtualScene(). Veja
     // comentários detalhados dentro da definição de BuildTrianglesAndAddToVirtualScene().
     glBindVertexArray(g_VirtualScene[object_name].vertex_array_object_id);
+
+
+     // Setamos as variáveis "bbox_min" e "bbox_max" do fragment shader
+    // com os parâmetros da axis-aligned bounding box (AABB) do modelo.
+    glm::vec3 bbox_min = g_VirtualScene[object_name].bbox_min;
+    glm::vec3 bbox_max = g_VirtualScene[object_name].bbox_max;
+    glUniform4f(g_bbox_min_uniform, bbox_min.x, bbox_min.y, bbox_min.z, 1.0f);
+    glUniform4f(g_bbox_max_uniform, bbox_max.x, bbox_max.y, bbox_max.z, 1.0f);
+
 
     // Pedimos para a GPU rasterizar os vértices dos eixos XYZ
     // apontados pelo VAO como linhas. Veja a definição de  ???   ---> isso é de algo anterior
@@ -543,6 +530,13 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada
         size_t first_index = indices.size();
         size_t num_triangles = model->shapes[shape].mesh.num_face_vertices.size();
 
+
+        const float minval = std::numeric_limits<float>::min();
+        const float maxval = std::numeric_limits<float>::max();
+
+        glm::vec3 bbox_min = glm::vec3(maxval,maxval,maxval);
+        glm::vec3 bbox_max = glm::vec3(minval,minval,minval);
+
         for (size_t triangle = 0; triangle < num_triangles; ++triangle)
         {
             assert(model->shapes[shape].mesh.num_face_vertices[triangle] == 3);
@@ -561,6 +555,14 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada
                 model_coefficients.push_back(vy);   // Y
                 model_coefficients.push_back(vz);   // Z
                 model_coefficients.push_back(1.0f); // W
+
+
+                bbox_min.x = std::min(bbox_min.x, vx);
+                bbox_min.y = std::min(bbox_min.y, vy);
+                bbox_min.z = std::min(bbox_min.z, vz);
+                bbox_max.x = std::max(bbox_max.x, vx);
+                bbox_max.y = std::max(bbox_max.y, vy);
+                bbox_max.z = std::max(bbox_max.z, vz);
 
                 // Inspecionando o código da tinyobjloader, o aluno Bernardo
                 // Sulzbach (2017/1) apontou que a maneira correta de testar se
@@ -596,6 +598,10 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada
         theobject.num_indices = last_index - first_index + 1; // Número de indices
         theobject.rendering_mode = GL_TRIANGLES;              // Índices correspondem ao tipo de rasterização GL_TRIANGLES.
         theobject.vertex_array_object_id = vertex_array_object_id;
+
+
+        theobject.bbox_min = bbox_min;
+        theobject.bbox_max = bbox_max;
 
         g_VirtualScene[model->shapes[shape].name] = theobject;
     }
@@ -842,6 +848,59 @@ void PrintObjModelInfo(ObjModel *model)
     }
 }
 
+// Função que carrega uma imagem para ser utilizada como textura
+void LoadTextureImage(const char* filename)
+{
+    printf("Carregando imagem \"%s\"... ", filename);
+
+    // Primeiro fazemos a leitura da imagem do disco
+    stbi_set_flip_vertically_on_load(true);
+    int width;
+    int height;
+    int channels;
+    unsigned char *data = stbi_load(filename, &width, &height, &channels, 3);
+
+    if ( data == NULL )
+    {
+        fprintf(stderr, "ERROR: Cannot open image file \"%s\".\n", filename);
+        std::exit(EXIT_FAILURE);
+    }
+
+    printf("OK (%dx%d).\n", width, height);
+
+    // Agora criamos objetos na GPU com OpenGL para armazenar a textura
+    GLuint texture_id;
+    GLuint sampler_id;
+    glGenTextures(1, &texture_id);
+    glGenSamplers(1, &sampler_id);
+
+    // Veja slides 95-96 do documento Aula_20_Mapeamento_de_Texturas.pdf
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // Parâmetros de amostragem da textura.
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Agora enviamos a imagem lida do disco para a GPU
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+
+    GLuint textureunit = g_NumLoadedTextures;
+    glActiveTexture(GL_TEXTURE0 + textureunit);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindSampler(textureunit, sampler_id);
+
+    stbi_image_free(data);
+
+    g_NumLoadedTextures += 1;
+}
+
+
 void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def)
 {
     glm::mat4 model = Matrix_Translate(x, y, z) * Matrix_Scale(0.6f, 0.6f, 1.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
@@ -849,4 +908,21 @@ void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_
     glUniform1i(g_object_id_uniform, obj_def);
     DrawVirtualObject(obj_name);
     return;
+}
+
+
+void drawMap(glm::mat4 model)
+{
+    for (int i = 0; i < DimLab; i++)
+    {
+        for (int j = 0; j < DimLab; j++)
+        {
+            float lado = 50;
+            float altura = 35;
+             model = Matrix_Translate(lado*(i-1), altura*Labirinto[i][j] - 17.5, lado*(j-1)) * Matrix_Scale(lado, altura, lado);
+             glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+             glUniform1i(g_object_id_uniform, CUBE);
+             DrawVirtualObject("the_cube");
+ }
+ }
 }

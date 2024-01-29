@@ -18,5 +18,10 @@
   "directory": "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build",
   "command": "C:\\PROGRA~1\\MinGW\\bin\\gcc.exe  @CMakeFiles/main.dir/includes_C.rsp -g -o CMakeFiles\\main.dir\\src\\glad.c.obj -c C:\\Users\\Enzo\\Documentos\\5_SEMESTRE\\FCG\\TrabFinalFCG2023\\src\\glad.c",
   "file": "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/glad.c"
+},
+{
+  "directory": "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/build",
+  "command": "C:\\PROGRA~1\\MinGW\\bin\\G__~1.EXE  @CMakeFiles/main.dir/includes_CXX.rsp -g -std=c++11 -o CMakeFiles\\main.dir\\src\\stb_image.cpp.obj -c C:\\Users\\Enzo\\Documentos\\5_SEMESTRE\\FCG\\TrabFinalFCG2023\\src\\stb_image.cpp",
+  "file": "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/stb_image.cpp"
 }
 ]

@@ -333,6 +333,7 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  c:\users\enzo\documentos\5_semestre\fcg\trabfinalfcg2023\include\glm\ext\vector_uint1_precision.hpp \
  c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\cstring \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glm/gtc/type_ptr.inl \
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/stb_image.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/tiny_obj_loader.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/matrices.h \
@@ -344,4 +345,5 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/text.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/dejavufont.h \
- C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h \
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/map.h

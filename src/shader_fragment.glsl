@@ -12,19 +12,39 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+in vec4 position_model;
+
+// Coordenadas de textura obtidas do arquivo OBJ
+in vec2 texcoords;
+
 // Identificador que define qual objeto está sendo desenhado no momento
-#define PLANE 0
 #define STONE_EYES  1
 #define STONE_HANDS_LEGS  2
 #define STONE_HEAD  3
 #define STONE_TORSO  4
 #define REAPER 5
 #define SCORPION 6
+#define CUBE 7
 
 uniform int object_id;
 
+
+// Parâmetros da axis-aligned bounding box (AABB) do modelo
+uniform vec4 bbox_min;
+uniform vec4 bbox_max;
+
+// Variáveis para acesso das imagens de textura
+uniform sampler2D TextureImage0;
+uniform sampler2D TextureImage1;
+
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
+
+// Constantes
+#define M_PI   3.14159265358979323846
+#define M_PI_2 1.57079632679489661923
+
+
 
 void main()
 {
@@ -45,7 +65,7 @@ void main()
     vec4 n = normalize(normal);
 
     // Vetor que define o sentido da fonte de luz em relação ao ponto atual.
-    vec4 l = normalize(vec4(1.0,1.0,0.5,0.0));
+    vec4 l = normalize(vec4(1.0,1.0,0.0,0.0));  // aqui era 0.5 no inicial
 
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
@@ -54,7 +74,13 @@ void main()
     // Caso queiramos que a fonte de luz seja a câmera, basta descomentar a linha abaixo
      // sentido da fonte de luz = sentido da cÂmera!
 
-    l = v;    // tarefa 2.1 lab 04
+    // l = v;    // tarefa 2.1 lab 04
+
+    // Coordenadas de textura U e V
+    
+    float U = 0.0;
+    float V = 0.0;
+
 
 
     // Vetor que define o sentido da reflexão especular ideal.   // ch
@@ -70,6 +96,7 @@ void main()
  
     if ( object_id == STONE_EYES )          // Olhos serão especulares   // ch
     {
+        
         Kd = vec3(1.0,0.0,0.0);
         Ks = vec3(0.0,0.0,0.0);
         Ka = vec3(0.5,0.0,0.0);
@@ -97,20 +124,29 @@ void main()
         q = 1.0;
     }
 
-   else if ( object_id == PLANE )   // ch
-    {
-        Kd = vec3(0.1,0.6,0.8); 
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.05,0.3,0.4);
-        q = 1.0;
-    }
-
     else if ( object_id == REAPER )   // ch
     {
+        /*
         Kd = vec3(0.1,0.1,0.4); 
         Ks = vec3(0.0,0.0,0.0);
         Ka = vec3(0.05,0.05,0.2);
         q = 1.0;
+        */
+
+        vec4 p_vector;
+        vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
+
+        p_vector = position_model - bbox_center;
+        float p_vector_length = length(p_vector);
+
+
+        float symbol_theta = atan(p_vector.x,p_vector.z);
+        float symbol_phi = asin(p_vector.y / p_vector_length);
+
+
+        U = (symbol_theta + M_PI) / (2 * M_PI);
+        V = (symbol_phi + M_PI_2) / M_PI;
+        
     }
 
     
@@ -122,9 +158,28 @@ void main()
         q = 1.0;
     }
 
-    else // Objeto desconhecido = preto  // ch 
+    else if (object_id == CUBE) 
     {
-        Kd = vec3(0.0,0.0,0.0);
+
+        vec4 p_vector;
+        vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
+
+        p_vector = position_model - bbox_center;
+        float p_vector_length = length(p_vector);
+
+
+        float symbol_theta = atan(p_vector.x,p_vector.z);
+        float symbol_phi = asin(p_vector.y / p_vector_length);
+
+
+        U = (symbol_theta + M_PI) / (2 * M_PI);
+        V = (symbol_phi + M_PI_2) / M_PI;
+
+    }
+
+    else // Objeto desconhecido = verde  // ch 
+    {
+        Kd = vec3(0.0,0.6,0.0);
         Ks = vec3(0.0,0.0,0.0);
         Ka = vec3(0.0,0.0,0.0);
         q = 1.0;
@@ -158,7 +213,6 @@ void main()
 
     
 
-
     // Espectro da luz ambiente
     vec3 Ia = vec3(0.2,0.2,0.2);        // ch
 
@@ -189,14 +243,43 @@ void main()
     //    suas distâncias para a câmera (desenhando primeiro objetos
     //    transparentes que estão mais longe da câmera).
     // Alpha default = 1 = 100% opaco = 0% transparente
-    color.a = 1;
 
+  
+    if (object_id == REAPER) {
+
+           // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
+       vec3 Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
+
+       // Equação de Iluminação
+       float lambert = max(0,dot(n,l));
+
+       color.rgb = Kd0 * (lambert + 0.01);
+    }
+
+    else if (object_id == CUBE) {
+
+       vec3 Kd1 = texture(TextureImage0, vec2(U,V)).rgb;
+
+       // Equação de Iluminação
+       float lambert = max(0,dot(n,l));
+
+       color.rgb = Kd1 * (lambert + 0.01);
+
+    }
+
+    else {
     // Cor final do fragmento calculada com uma combinação dos termos difuso,
     // especular, e ambiente. Veja slide 129 do documento Aula_17_e_18_Modelos_de_Iluminacao.pdf.
     color.rgb = lambert_diffuse_term + ambient_term + phong_specular_term;
+    }
+
+
+    color.a = 1;
 
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
     color.rgb = pow(color.rgb, vec3(1.0,1.0,1.0)/2.2);
+
+
 } 
 

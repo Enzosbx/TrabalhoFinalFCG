@@ -392,6 +392,7 @@ CMakeFiles/main.dir/src/main.cpp.obj
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glm/ext/vector_uint1_precision.hpp
  C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cstring
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glm/gtc/type_ptr.inl
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/stb_image.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/tiny_obj_loader.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/matrices.h
@@ -404,6 +405,38 @@ CMakeFiles/main.dir/src/main.cpp.obj
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/dejavufont.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/map.h
+
+CMakeFiles/main.dir/src/stb_image.cpp.obj
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/stb_image.cpp
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/stb_image.h
+ C:/Program Files/MinGW/include/stdio.h
+ C:/Program Files/MinGW/include/_mingw.h
+ C:/Program Files/MinGW/include/msvcrtver.h
+ C:/Program Files/MinGW/include/w32api.h
+ C:/Program Files/MinGW/include/sdkddkver.h
+ C:/Program Files/MinGW/include/features.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/stddef.h
+ C:/Program Files/MinGW/include/sys/types.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/stdarg.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/stdlib.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cstdlib
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/c++config.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/os_defines.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/cpu_defines.h
+ C:/Program Files/MinGW/include/stdlib.h
+ C:/Program Files/MinGW/include/errno.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/std_abs.h
+ C:/Program Files/MinGW/include/string.h
+ C:/Program Files/MinGW/include/limits.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/math.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cmath
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/cpp_type_traits.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ext/type_traits.h
+ C:/Program Files/MinGW/include/math.h
+ C:/Program Files/MinGW/include/assert.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/stdint.h
+ C:/Program Files/MinGW/include/stdint.h
 
 CMakeFiles/main.dir/src/textrendering.cpp.obj
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/textrendering.cpp

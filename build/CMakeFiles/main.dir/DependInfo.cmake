@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/glad.c" "CMakeFiles/main.dir/src/glad.c.obj" "gcc" "CMakeFiles/main.dir/src/glad.c.obj.d"
   "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/main.cpp" "CMakeFiles/main.dir/src/main.cpp.obj" "gcc" "CMakeFiles/main.dir/src/main.cpp.obj.d"
+  "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/stb_image.cpp" "CMakeFiles/main.dir/src/stb_image.cpp.obj" "gcc" "CMakeFiles/main.dir/src/stb_image.cpp.obj.d"
   "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/textrendering.cpp" "CMakeFiles/main.dir/src/textrendering.cpp.obj" "gcc" "CMakeFiles/main.dir/src/textrendering.cpp.obj.d"
   "C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/tiny_obj_loader.cpp" "CMakeFiles/main.dir/src/tiny_obj_loader.cpp.obj" "gcc" "CMakeFiles/main.dir/src/tiny_obj_loader.cpp.obj.d"
   )
