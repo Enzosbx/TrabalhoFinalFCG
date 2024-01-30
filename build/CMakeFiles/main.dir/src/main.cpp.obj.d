@@ -345,5 +345,4 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/text.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/dejavufont.h \
- C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h \
- C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/map.h
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h

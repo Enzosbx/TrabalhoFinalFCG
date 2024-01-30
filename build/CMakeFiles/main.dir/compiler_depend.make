@@ -402,8 +402,7 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   ../include/text.h \
   ../include/utils.h \
   ../include/dejavufont.h \
-  ../include/callbacks.h \
-  ../include/map.h
+  ../include/callbacks.h
 
 CMakeFiles/main.dir/src/stb_image.cpp.obj: ../src/stb_image.cpp \
   ../include/stb_image.h \
@@ -695,8 +694,6 @@ C:/Program\ Files/MinGW/include/winnls.h:
 ../include/glad/glad.h:
 
 C:/Program\ Files/MinGW/include/windef.h:
-
-../include/map.h:
 
 ../include/glm/ext/quaternion_double_precision.hpp:
 

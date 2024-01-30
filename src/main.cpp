@@ -37,7 +37,7 @@
 #include "callbacks.h"
 #include "shaders.h"
 #include "text.h"
-#include "map.h"
+
 
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
@@ -105,7 +105,11 @@ void LoadTextureImage(const char* filename); // Função que carrega imagens de 
 void DrawVirtualObject(const char *object_name);                                      // Desenha um objeto armazenado em g_VirtualScene
 void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def); // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
 
+    // Funções e definições relativas ao mapa
 void drawMap(glm::mat4 model); // Desenha o mapa do jogo
+void readMap(FILE *arquivo);  // Lê o mapa
+#define DimLab 19
+int Labirinto[DimLab][DimLab];
 
 void PrintObjModelInfo(ObjModel *); // Função para debugging  // essa precisa ficar na main
 
@@ -207,14 +211,17 @@ int main(int argc, char *argv[])
     
      // Carregamos duas imagens para serem utilizadas como textura
    
-    LoadTextureImage("../../data/wood-texture.jpg");    // TextureImage0
-    LoadTextureImage("../../data/textura-caveira.jpg");   // TextureImage1  
-
+  
 
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slides 180-200 do documento Aula_03_Rendering_Pipeline_Grafico.pdf.
     //
     LoadShadersFromFiles();
+
+    LoadTextureImage("../../data/wood-texture.jpg");    // TextureImage0
+    LoadTextureImage("../../data/textura-pedra.jpeg");   // TextureImage1
+    LoadTextureImage("../../data/textura-caveira.jpg");   // TextureImage2 
+    LoadTextureImage("../../data/textura-carne.jpg");   // TextureImage3 
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 
@@ -234,15 +241,13 @@ int main(int argc, char *argv[])
     ComputeNormals(&reapermodel);
     BuildTrianglesAndAddToVirtualScene(&reapermodel);
 
-    ObjModel cubemodel("../../data/cubooo.obj");
-    ComputeNormals(&cubemodel);
-    BuildTrianglesAndAddToVirtualScene(&cubemodel);
+    ObjModel wall_cubemodel("../../data/cubooo.obj");
+    ComputeNormals(&wall_cubemodel);
+    BuildTrianglesAndAddToVirtualScene(&wall_cubemodel);
 
-    /*
-    ObjModel scarecrowmodel("../../data/Scarecrow.obj");
-    ComputeNormals(&scarecrowmodel);
-    BuildTrianglesAndAddToVirtualScene(&scarecrowmodel);
-    */
+    ObjModel floor_cubemodel = wall_cubemodel;
+    ComputeNormals(&floor_cubemodel);
+    BuildTrianglesAndAddToVirtualScene(&floor_cubemodel);
 
     if (argc > 1)
     {
@@ -334,14 +339,14 @@ int main(int argc, char *argv[])
         glUniformMatrix4fv(g_view_uniform, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(g_projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
 
-#define PLANE 0
 #define STONE_EYES 1
 #define STONE_HANDS_LEGS 2
 #define STONE_HEAD 3
 #define STONE_TORSO 4
 #define REAPER 5
 #define SCORPION 6
-#define CUBE 7
+#define WALL_CUBE 7
+#define FLOOR_CUBE 8
 
         // Desenhamos o mapa, com seus cubos
 
@@ -921,8 +926,53 @@ void drawMap(glm::mat4 model)
             float altura = 35;
              model = Matrix_Translate(lado*(i-1), altura*Labirinto[i][j] - 17.5, lado*(j-1)) * Matrix_Scale(lado, altura, lado);
              glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-             glUniform1i(g_object_id_uniform, CUBE);
-             DrawVirtualObject("the_cube");
+
+            if (Labirinto[i][j] == 1) {
+                glUniform1i(g_object_id_uniform, WALL_CUBE);
+                DrawVirtualObject("the_cube");
+             }
+            else {
+                glUniform1i(g_object_id_uniform, FLOOR_CUBE);
+                DrawVirtualObject("the_cube");
+             }
  }
  }
+}
+
+
+
+
+void readMap(FILE *arquivo) {
+    // Abre o arquivo usando um caminho relativo.
+
+    arquivo = fopen("../../labirinto.txt", "r+");
+
+    // Verifica se a abertura do arquivo foi bem-sucedida.
+    if (arquivo == NULL)
+    {
+        printf("Nao foi possivel abrir o arquivo.\n");
+        return; // Retorna um código de erro (er - mudar para 1);
+    }
+    else {
+    printf("Blablabla.\n");
+    }
+
+    for (int i = 0; i < DimLab; i++)
+    {
+        for (int j = 0; j < DimLab; j++)
+        {
+            char c = fgetc(arquivo);
+            switch (c)
+            {
+            case 'X':
+                Labirinto[i][j] = 1;
+                break;
+            case ' ':
+                Labirinto[i][j] = 0;
+                break;
+            }
+        }
+        fgetc(arquivo); // quebra de linha
+    }
+    fclose(arquivo);
 }

@@ -24,7 +24,8 @@ in vec2 texcoords;
 #define STONE_TORSO  4
 #define REAPER 5
 #define SCORPION 6
-#define CUBE 7
+#define WALL_CUBE 7
+#define FLOOR_CUBE 8
 
 uniform int object_id;
 
@@ -36,6 +37,9 @@ uniform vec4 bbox_max;
 // Variáveis para acesso das imagens de textura
 uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
+uniform sampler2D TextureImage2;
+uniform sampler2D TextureImage3;
+//uniform sampler2D TextureImage4;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
@@ -43,7 +47,6 @@ out vec4 color;
 // Constantes
 #define M_PI   3.14159265358979323846
 #define M_PI_2 1.57079632679489661923
-
 
 
 void main()
@@ -74,7 +77,7 @@ void main()
     // Caso queiramos que a fonte de luz seja a câmera, basta descomentar a linha abaixo
      // sentido da fonte de luz = sentido da cÂmera!
 
-    // l = v;    // tarefa 2.1 lab 04
+    l = v;    // tarefa 2.1 lab 04
 
     // Coordenadas de textura U e V
     
@@ -126,41 +129,63 @@ void main()
 
     else if ( object_id == REAPER )   // ch
     {
-        /*
-        Kd = vec3(0.1,0.1,0.4); 
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.05,0.05,0.2);
-        q = 1.0;
-        */
+        float minx = bbox_min.x;    // Projeção planar
+        float maxx = bbox_max.x;
 
-        vec4 p_vector;
-        vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
 
-        p_vector = position_model - bbox_center;
-        float p_vector_length = length(p_vector);
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
 
-
-        float symbol_theta = atan(p_vector.x,p_vector.z);
-        float symbol_phi = asin(p_vector.y / p_vector_length);
-
-
-        U = (symbol_theta + M_PI) / (2 * M_PI);
-        V = (symbol_phi + M_PI_2) / M_PI;
+                                                            // seguindo o slide 6
+                                                            // do link https://moodle.inf.ufrgs.br/pluginfile.php/199727/mod_resource/content/2/Aula_22_Laboratorio_5.pdf
+        U = (position_model.x - minx) / (maxx - minx);
+        V = (position_model.y - miny) / (maxy - miny);
         
     }
 
     
     else if ( object_id == SCORPION )   // ch
     {
-        Kd = vec3(0.8,0.1,0.1); 
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.4,0.05,0.05);
-        q = 1.0;
+        float minx = bbox_min.x;    // Projeção planar
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+                                                            // seguindo o slide 6
+                                                            // do link https://moodle.inf.ufrgs.br/pluginfile.php/199727/mod_resource/content/2/Aula_22_Laboratorio_5.pdf
+        U = (position_model.x - minx) / (maxx - minx);
+        V = (position_model.y - miny) / (maxy - miny);
+       
     }
 
-    else if (object_id == CUBE) 
+    else if (object_id == WALL_CUBE) 
     {
+                                    // Projeção Esférica
+        vec4 p_vector;      
+        vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
 
+        p_vector = position_model - bbox_center;
+        float p_vector_length = length(p_vector);
+
+
+        float symbol_theta = atan(p_vector.x,p_vector.z);
+        float symbol_phi = asin(p_vector.y / p_vector_length);
+
+
+        U = (symbol_theta + M_PI) / (2 * M_PI);
+        V = (symbol_phi + M_PI_2) / M_PI;
+
+    }
+
+     else if (object_id == FLOOR_CUBE) 
+    {
+                                   // Projeção Esférica
         vec4 p_vector;
         vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
 
@@ -176,6 +201,7 @@ void main()
         V = (symbol_phi + M_PI_2) / M_PI;
 
     }
+
 
     else // Objeto desconhecido = verde  // ch 
     {
@@ -184,6 +210,7 @@ void main()
         Ka = vec3(0.0,0.0,0.0);
         q = 1.0;
     }
+
 
     // Espectro da fonte de iluminação
     vec3 I = vec3(1.0,1.0,1.0);            // ch 
@@ -248,17 +275,40 @@ void main()
     if (object_id == REAPER) {
 
            // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-       vec3 Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
+       vec3 Kd2 = texture(TextureImage2, vec2(U,V)).rgb;
+
+       // Equação de Iluminação
+       float lambert = max(0,dot(n,l));
+
+       color.rgb = Kd2 * (lambert + 0.01);
+    }
+
+    else if (object_id == WALL_CUBE) {
+
+       vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
 
        // Equação de Iluminação
        float lambert = max(0,dot(n,l));
 
        color.rgb = Kd0 * (lambert + 0.01);
+
     }
 
-    else if (object_id == CUBE) {
+    else if (object_id == SCORPION) {
+  
+       vec3 Kd3 = texture(TextureImage3, vec2(U,V)).rgb;
 
-       vec3 Kd1 = texture(TextureImage0, vec2(U,V)).rgb;
+       // Equação de Iluminação
+       float lambert = max(0,dot(n,l));
+
+       color.rgb = Kd3 * (lambert + 0.01);
+    }
+
+
+
+    else if (object_id == FLOOR_CUBE) {
+
+       vec3 Kd1 = texture(TextureImage1, vec2(U,V)).rgb;
 
        // Equação de Iluminação
        float lambert = max(0,dot(n,l));
