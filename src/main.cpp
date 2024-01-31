@@ -222,6 +222,7 @@ int main(int argc, char *argv[])
     LoadTextureImage("../../data/textura-pedra.jpeg");   // TextureImage1
     LoadTextureImage("../../data/textura-caveira.jpg");   // TextureImage2 
     LoadTextureImage("../../data/textura-carne.jpg");   // TextureImage3 
+    LoadTextureImage("../../data/textura-dourada.jpg");   // TextureImage4 
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 
@@ -245,6 +246,10 @@ int main(int argc, char *argv[])
     ComputeNormals(&wall_cubemodel);
     BuildTrianglesAndAddToVirtualScene(&wall_cubemodel);
 
+    ObjModel fencemodel("../../data/fence.obj");
+    ComputeNormals(&fencemodel);
+    BuildTrianglesAndAddToVirtualScene(&fencemodel);
+
     ObjModel floor_cubemodel = wall_cubemodel;
     ComputeNormals(&floor_cubemodel);
     BuildTrianglesAndAddToVirtualScene(&floor_cubemodel);
@@ -265,6 +270,10 @@ int main(int argc, char *argv[])
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+
+
+    float prev_time_d = glfwGetTime();
+
 
     // Ficamos em um loop infinito, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
@@ -347,6 +356,8 @@ int main(int argc, char *argv[])
 #define SCORPION 6
 #define WALL_CUBE 7
 #define FLOOR_CUBE 8
+#define FENCEA 9
+#define FENCEB 10
 
         // Desenhamos o mapa, com seus cubos
 
@@ -375,7 +386,7 @@ int main(int argc, char *argv[])
 
         // Desenhamos o modelo do reaper
 
-        model = Matrix_Translate(50.0f, -17.5f, 100.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Rotate_Z(-1.5708f) * Matrix_Scale(3.0f,3.0f,3.0f);
+        model = Matrix_Translate(100.0f, -17.5f, 180.0f)  * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(3.0f,3.0f,3.0f);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, REAPER);
         DrawVirtualObject("17034_grim_reaper");
@@ -389,7 +400,23 @@ int main(int argc, char *argv[])
         glUniform1i(g_object_id_uniform, SCORPION);
         DrawVirtualObject("Group61355");
 
-        
+        // Desenhamos o modelo da porta
+
+
+          float time_now = glfwGetTime();
+          float delta_t = time_now - prev_time_d;
+          prev_time = time_now;
+
+          model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f,0.5f,0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t) ;
+          glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+          glUniform1i(g_object_id_uniform, FENCEA);
+          DrawVirtualObject("Body_fence01a_reference_smd_mesh_1");
+
+          model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f,0.5f,0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t);
+          glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+          glUniform1i(g_object_id_uniform, FENCEB);
+          DrawVirtualObject("Body_fence01a_reference_smd_mesh_0");
+
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário

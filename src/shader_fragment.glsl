@@ -15,9 +15,11 @@ uniform mat4 projection;
 in vec4 position_model;
 
 // Coordenadas de textura obtidas do arquivo OBJ
-in vec2 texcoords;
+in vec2 textcoords;
 
 // Identificador que define qual objeto está sendo desenhado no momento
+
+#define DOOR 0
 #define STONE_EYES  1
 #define STONE_HANDS_LEGS  2
 #define STONE_HEAD  3
@@ -26,6 +28,8 @@ in vec2 texcoords;
 #define SCORPION 6
 #define WALL_CUBE 7
 #define FLOOR_CUBE 8
+#define FENCEA 9
+#define FENCEB 10
 
 uniform int object_id;
 
@@ -39,7 +43,7 @@ uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
-//uniform sampler2D TextureImage4;
+uniform sampler2D TextureImage4;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
@@ -47,6 +51,9 @@ out vec4 color;
 // Constantes
 #define M_PI   3.14159265358979323846
 #define M_PI_2 1.57079632679489661923
+
+
+
 
 
 void main()
@@ -163,6 +170,44 @@ void main()
         V = (position_model.y - miny) / (maxy - miny);
        
     }
+
+
+     else if (object_id == FENCEA) 
+    {
+                       // Projeção Esférica
+        vec4 p_vector;      
+        vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
+
+        p_vector = position_model - bbox_center;
+        float p_vector_length = length(p_vector);
+
+
+        float symbol_theta = atan(p_vector.x,p_vector.z);
+        float symbol_phi = asin(p_vector.y / p_vector_length);
+
+
+        U = (symbol_theta + M_PI) / (2 * M_PI);
+        V = (symbol_phi + M_PI_2) / M_PI;
+    }
+
+     else if (object_id == FENCEB) 
+    {
+                       // Projeção Esférica
+        vec4 p_vector;      
+        vec4 bbox_center = (bbox_min + bbox_max) / 2.0;
+
+        p_vector = position_model - bbox_center;
+        float p_vector_length = length(p_vector);
+
+
+        float symbol_theta = atan(p_vector.x,p_vector.z);
+        float symbol_phi = asin(p_vector.y / p_vector_length);
+
+
+        U = (symbol_theta + M_PI) / (2 * M_PI);
+        V = (symbol_phi + M_PI_2) / M_PI;
+    }
+
 
     else if (object_id == WALL_CUBE) 
     {
@@ -294,6 +339,27 @@ void main()
 
     }
 
+    else if (object_id == FENCEA) {
+
+       vec3 Kd4 = texture(TextureImage4, vec2(U,V)).rgb;
+
+       // Equação de Iluminação
+       float lambert = max(0,dot(n,l));
+
+       color.rgb = Kd4 * (lambert + 0.01);
+    }
+
+    else if (object_id == FENCEB) {
+
+       vec3 Kd4 = texture(TextureImage4, vec2(U,V)).rgb;
+
+       // Equação de Iluminação
+       float lambert = max(0,dot(n,l));
+
+       color.rgb = Kd4 * (lambert + 0.01);
+
+    }
+
     else if (object_id == SCORPION) {
   
        vec3 Kd3 = texture(TextureImage3, vec2(U,V)).rgb;
@@ -303,8 +369,6 @@ void main()
 
        color.rgb = Kd3 * (lambert + 0.01);
     }
-
-
 
     else if (object_id == FLOOR_CUBE) {
 
