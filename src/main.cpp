@@ -111,9 +111,9 @@ void PrintObjModelInfo(ObjModel *);           // Função para debugging
 
 #define DimLab 19
 void drawMap(glm::mat4 model); // Desenha o mapa do jogo
-void readMap(FILE *arquivo);  // Lê o mapa
+void readMap(FILE *arquivo);  // Lê o mapaa
 int Labirinto[DimLab][DimLab];
-
+       
 
 // Definimos uma estrutura que armazenará dados necessários para renderizar
 // cada objeto da cena virtual.
