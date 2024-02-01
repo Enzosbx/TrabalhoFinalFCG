@@ -27,7 +27,6 @@
 
 // Headers da biblioteca para carregar modelos obj
 #include <stb_image.h>
-
 #include <tiny_obj_loader.h>
 
 
@@ -98,20 +97,23 @@ struct ObjModel
     }
 };
 
+// Outras funções, que estão implementadas após a main.
 
-void BuildTrianglesAndAddToVirtualScene(ObjModel *);                                  // Constrói representação de um ObjModel como malha de triângulos para renderização
-void ComputeNormals(ObjModel *model);                                                 // Computa normais de um ObjModel, caso não existam.
-void LoadTextureImage(const char* filename); // Função que carrega imagens de textura
-void DrawVirtualObject(const char *object_name);                                      // Desenha um objeto armazenado em g_VirtualScene
+
+void BuildTrianglesAndAddToVirtualScene(ObjModel *);       // Constrói representação de um ObjModel como malha de triângulos para renderização
+void ComputeNormals(ObjModel *model);                  // Computa normais de um ObjModel, caso não existam.
+void LoadTextureImage(const char* filename);          // Função que carrega imagens de textura
+void DrawVirtualObject(const char *object_name);    // Desenha um objeto armazenado em g_VirtualScene
 void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def); // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
+void PrintObjModelInfo(ObjModel *);           // Função para debugging
 
-    // Funções e definições relativas ao mapa
+// Funções e definições relativas ao mapa
+
+#define DimLab 19
 void drawMap(glm::mat4 model); // Desenha o mapa do jogo
 void readMap(FILE *arquivo);  // Lê o mapa
-#define DimLab 19
 int Labirinto[DimLab][DimLab];
 
-void PrintObjModelInfo(ObjModel *); // Função para debugging  // essa precisa ficar na main
 
 // Definimos uma estrutura que armazenará dados necessários para renderizar
 // cada objeto da cena virtual.
@@ -132,6 +134,7 @@ struct SceneObject
 // estes são acessados.
 std::map<std::string, SceneObject> g_VirtualScene;
 
+
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
 
@@ -143,7 +146,7 @@ int main(int argc, char *argv[])
 
     FILE *arquivo;
 
-    readMap(arquivo);  // Leitura do arquivo contendo o map
+    readMap(arquivo);  // Leitura do arquivo contendo o mapa
 
     int success = glfwInit();
     if (!success)
@@ -209,14 +212,12 @@ int main(int argc, char *argv[])
 
     printf("GPU: %s, %s, OpenGL %s, GLSL %s\n", vendor, renderer, glversion, glslversion);
     
-     // Carregamos duas imagens para serem utilizadas como textura
    
-  
-
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slides 180-200 do documento Aula_03_Rendering_Pipeline_Grafico.pdf.
-    //
     LoadShadersFromFiles();
+
+    // Carregamento das imagens de textura que serão utilizadas.
 
     LoadTextureImage("../../data/wood-texture.jpg");    // TextureImage0
     LoadTextureImage("../../data/textura-pedra.jpeg");   // TextureImage1
@@ -242,13 +243,13 @@ int main(int argc, char *argv[])
     ComputeNormals(&reapermodel);
     BuildTrianglesAndAddToVirtualScene(&reapermodel);
 
-    ObjModel wall_cubemodel("../../data/cubooo.obj");
-    ComputeNormals(&wall_cubemodel);
-    BuildTrianglesAndAddToVirtualScene(&wall_cubemodel);
-
     ObjModel fencemodel("../../data/fence.obj");
     ComputeNormals(&fencemodel);
     BuildTrianglesAndAddToVirtualScene(&fencemodel);
+
+    ObjModel wall_cubemodel("../../data/cube.obj");
+    ComputeNormals(&wall_cubemodel);
+    BuildTrianglesAndAddToVirtualScene(&wall_cubemodel);
 
     ObjModel floor_cubemodel = wall_cubemodel;
     ComputeNormals(&floor_cubemodel);
@@ -272,8 +273,7 @@ int main(int argc, char *argv[])
     glFrontFace(GL_CCW);
 
 
-    float prev_time_d = glfwGetTime();
-
+    float prev_time_d = glfwGetTime();  // variavel utilizada na animação da porta.
 
     // Ficamos em um loop infinito, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
@@ -299,12 +299,12 @@ int main(int argc, char *argv[])
         if (w_key_pressed == true)
         {
             camera_movement += glm::vec4{-w_vector.x*norm2D(), 0.0f, -w_vector.z*norm2D(), w_vector.w} * camera_speed;
-           // camera_movement += -w_vector * camera_speed;
+            // camera_movement += -w_vector * camera_speed;
         }
         if (a_key_pressed == true)
         {
             camera_movement += -u_vector * camera_speed;
-          //  camera_movement += -u_vector * camera_speed;
+           //camera_movement += -u_vector * camera_speed;
         }
         if (s_key_pressed == true)
         {
@@ -321,7 +321,7 @@ int main(int argc, char *argv[])
         // definir o sistema de coordenadas da câmera.
         glm::mat4 view;
 
-        if (g_UseLookAtCamera)
+        if (g_UseLookAtCamera)  
         { // Look At Camera
             view = defineViewLACam(view);
         }
@@ -348,7 +348,8 @@ int main(int argc, char *argv[])
         glUniformMatrix4fv(g_view_uniform, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(g_projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
 
-#define STONE_EYES 1
+
+#define STONE_EYES 1        // Definição de todos as figuras existentes nos objs.
 #define STONE_HANDS_LEGS 2
 #define STONE_HEAD 3
 #define STONE_TORSO 4
@@ -364,7 +365,6 @@ int main(int argc, char *argv[])
         drawMap(model);
 
         /*
-
         DrawGolemInstance(0.0f, 0.0f, -5.0f, "eyes_Esfera.007", 1);
         DrawGolemInstance(0.0f, 0.0f, -5.0f, "hands&leg.001_ice.003", 2);
         DrawGolemInstance(0.0f, 0.0f, -5.0f, "head.001_ice.004", 3);
@@ -381,7 +381,6 @@ int main(int argc, char *argv[])
         DrawGolemInstance(-5.0f, 0.0f, 0.0f, "hands&leg.001_ice.003", 2);
         DrawGolemInstance(-5.0f, 0.0f, 0.0f, "head.001_ice.004", 3);
         DrawGolemInstance(-5.0f, 0.0f, 0.0f, "torso.001_ice.005", 4);
-
         */
 
         // Desenhamos o modelo do reaper
@@ -389,33 +388,30 @@ int main(int argc, char *argv[])
         model = Matrix_Translate(100.0f, -17.5f, 180.0f)  * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(3.0f,3.0f,3.0f);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, REAPER);
-        DrawVirtualObject("17034_grim_reaper");
-
-        
+        DrawVirtualObject("the_reaper");
 
         // Desenhamos o modelo do escorpiao
 
         model = Matrix_Translate(0.0f, -16.5f, 80.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(5.0f,5.0f,5.0f);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, SCORPION);
-        DrawVirtualObject("Group61355");
+        DrawVirtualObject("the_scorpion");
 
-        // Desenhamos o modelo da porta
+        // Desenhamos o modelo da cerca, com animação
 
+        float time_now = glfwGetTime();
+        float delta_t = time_now - prev_time_d;
+        prev_time = time_now;
 
-          float time_now = glfwGetTime();
-          float delta_t = time_now - prev_time_d;
-          prev_time = time_now;
+        model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f,0.5f,0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t) ;
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, FENCEA);
+        DrawVirtualObject("the_fencea");
 
-          model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f,0.5f,0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t) ;
-          glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-          glUniform1i(g_object_id_uniform, FENCEA);
-          DrawVirtualObject("Body_fence01a_reference_smd_mesh_1");
-
-          model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f,0.5f,0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t);
-          glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-          glUniform1i(g_object_id_uniform, FENCEB);
-          DrawVirtualObject("Body_fence01a_reference_smd_mesh_0");
+        model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f,0.5f,0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t);
+        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, FENCEB);
+        DrawVirtualObject("the_fenceb");
 
 
         // O framebuffer onde OpenGL executa as operações de renderização não
@@ -475,75 +471,6 @@ void DrawVirtualObject(const char *object_name)
     glBindVertexArray(0);
 }
 
-// Função que computa as normais de um ObjModel, caso elas não tenham sido
-// especificadas dentro do arquivo ".obj"
-void ComputeNormals(ObjModel *model)
-{
-    if (!model->attrib.normals.empty())
-        return;
-
-    // Primeiro computamos as normais para todos os TRIÂNGULOS.
-    // Segundo, computamos as normais dos VÉRTICES através do método proposto
-    // por Gouraud, onde a normal de cada vértice vai ser a média das normais de
-    // todas as faces que compartilham este vértice.
-
-    size_t num_vertices = model->attrib.vertices.size() / 3;
-
-    std::vector<int> num_triangles_per_vertex(num_vertices, 0);
-    std::vector<glm::vec4> vertex_normals(num_vertices, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
-
-    for (size_t shape = 0; shape < model->shapes.size(); ++shape)
-    {
-        size_t num_triangles = model->shapes[shape].mesh.num_face_vertices.size();
-
-        for (size_t triangle = 0; triangle < num_triangles; ++triangle)
-        {
-            assert(model->shapes[shape].mesh.num_face_vertices[triangle] == 3);
-
-            glm::vec4 vertices[3];
-            for (size_t vertex = 0; vertex < 3; ++vertex)
-            {
-                tinyobj::index_t idx = model->shapes[shape].mesh.indices[3 * triangle + vertex];
-                const float vx = model->attrib.vertices[3 * idx.vertex_index + 0];
-                const float vy = model->attrib.vertices[3 * idx.vertex_index + 1];
-                const float vz = model->attrib.vertices[3 * idx.vertex_index + 2];
-                vertices[vertex] = glm::vec4(vx, vy, vz, 1.0);
-            }
-
-            const glm::vec4 a = vertices[0];
-            const glm::vec4 b = vertices[1];
-            const glm::vec4 c = vertices[2];
-
-            // cálculo da normal de um triângulo cujos vértices
-            // estão nos pontos "a", "b", e "c", definidos no sentido anti-horário.
-
-            const glm::vec4 vab = b - a;
-            const glm::vec4 vac = c - a;
-            const glm::vec4 n = crossproduct(vab, vac);
-
-            // Slide 163 das Aulas 17 e 18 - Modelos de Iluminação
-
-            for (size_t vertex = 0; vertex < 3; ++vertex)
-            {
-                tinyobj::index_t idx = model->shapes[shape].mesh.indices[3 * triangle + vertex];
-                num_triangles_per_vertex[idx.vertex_index] += 1;
-                vertex_normals[idx.vertex_index] += n;
-                model->shapes[shape].mesh.indices[3 * triangle + vertex].normal_index = idx.vertex_index;
-            }
-        }
-    }
-
-    model->attrib.normals.resize(3 * num_vertices);
-
-    for (size_t i = 0; i < vertex_normals.size(); ++i)
-    {
-        glm::vec4 n = vertex_normals[i] / (float)num_triangles_per_vertex[i];
-        n /= norm(n);
-        model->attrib.normals[3 * i + 0] = n.x;
-        model->attrib.normals[3 * i + 1] = n.y;
-        model->attrib.normals[3 * i + 2] = n.z;
-    }
-}
 
 // Constrói triângulos para futura renderização a partir de um ObjModel.
 void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada para cada modelo/objeto do arquivo obj!!!!.
@@ -695,6 +622,201 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada
     // alterar o mesmo. Isso evita bugs.
     glBindVertexArray(0);
 }
+
+
+// Função que carrega uma imagem para ser utilizada como textura
+void LoadTextureImage(const char* filename)
+{
+    printf("Carregando imagem \"%s\"... ", filename);
+
+    // Primeiro fazemos a leitura da imagem do disco
+    stbi_set_flip_vertically_on_load(true);
+    int width;
+    int height;
+    int channels;
+    unsigned char *data = stbi_load(filename, &width, &height, &channels, 3);
+
+    if ( data == NULL )
+    {
+        fprintf(stderr, "ERROR: Cannot open image file \"%s\".\n", filename);
+        std::exit(EXIT_FAILURE);
+    }
+
+    printf("OK (%dx%d).\n", width, height);
+
+    // Agora criamos objetos na GPU com OpenGL para armazenar a textura
+    GLuint texture_id;
+    GLuint sampler_id;
+    glGenTextures(1, &texture_id);
+    glGenSamplers(1, &sampler_id);
+
+    // Veja slides 95-96 do documento Aula_20_Mapeamento_de_Texturas.pdf
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // Parâmetros de amostragem da textura.
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(sampler_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Agora enviamos a imagem lida do disco para a GPU
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+
+    GLuint textureunit = g_NumLoadedTextures;
+    glActiveTexture(GL_TEXTURE0 + textureunit);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindSampler(textureunit, sampler_id);
+
+    stbi_image_free(data);
+
+    g_NumLoadedTextures += 1;
+}
+
+
+
+
+void drawMap(glm::mat4 model)
+{
+    for (int i = 0; i < DimLab; i++)
+    {
+        for (int j = 0; j < DimLab; j++)
+        {
+            float lado = 50;
+            float altura = 35;
+             model = Matrix_Translate(lado*(i-1), altura*Labirinto[i][j] - 17.5, lado*(j-1)) * Matrix_Scale(lado, altura, lado);
+             glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+
+            if (Labirinto[i][j] == 1) {
+                glUniform1i(g_object_id_uniform, WALL_CUBE);
+                DrawVirtualObject("the_cube");
+             }
+            else {
+                glUniform1i(g_object_id_uniform, FLOOR_CUBE);
+                DrawVirtualObject("the_cube");
+             }
+ }
+ }
+}
+
+
+
+
+void readMap(FILE *arquivo) {
+    // Abre o arquivo usando um caminho relativo.
+
+    arquivo = fopen("../../labirinto.txt", "r+");
+
+    // Verifica se a abertura do arquivo foi bem-sucedida.
+    if (arquivo == NULL)
+    {
+        printf("Nao foi possivel abrir o arquivo.\n");
+        return; // Retorna um código de erro (er - mudar para 1);
+    }
+    else {
+    printf("Blablabla.\n");
+    }
+
+    for (int i = 0; i < DimLab; i++)
+    {
+        for (int j = 0; j < DimLab; j++)
+        {
+            char c = fgetc(arquivo);
+            switch (c)
+            {
+            case 'X':
+                Labirinto[i][j] = 1;
+                break;
+            case ' ':
+                Labirinto[i][j] = 0;
+                break;
+            }
+        }
+        fgetc(arquivo); // quebra de linha
+    }
+    fclose(arquivo);
+}
+
+
+
+// OBSERVAÇÃO : UTILIZAR ESSA FUNÇÃO DEPOIS PARA FAZER GOURAUD
+
+// Função que computa as normais de um ObjModel, caso elas não tenham sido
+// especificadas dentro do arquivo ".obj"
+void ComputeNormals(ObjModel *model)        
+{
+    if (!model->attrib.normals.empty())
+        return;
+
+    // Primeiro computamos as normais para todos os TRIÂNGULOS.
+    // Segundo, computamos as normais dos VÉRTICES através do método proposto
+    // por Gouraud, onde a normal de cada vértice vai ser a média das normais de
+    // todas as faces que compartilham este vértice.
+
+    size_t num_vertices = model->attrib.vertices.size() / 3;
+
+    std::vector<int> num_triangles_per_vertex(num_vertices, 0);
+    std::vector<glm::vec4> vertex_normals(num_vertices, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+    for (size_t shape = 0; shape < model->shapes.size(); ++shape)
+    {
+        size_t num_triangles = model->shapes[shape].mesh.num_face_vertices.size();
+
+        for (size_t triangle = 0; triangle < num_triangles; ++triangle)
+        {
+            assert(model->shapes[shape].mesh.num_face_vertices[triangle] == 3);
+
+            glm::vec4 vertices[3];
+            for (size_t vertex = 0; vertex < 3; ++vertex)
+            {
+                tinyobj::index_t idx = model->shapes[shape].mesh.indices[3 * triangle + vertex];
+                const float vx = model->attrib.vertices[3 * idx.vertex_index + 0];
+                const float vy = model->attrib.vertices[3 * idx.vertex_index + 1];
+                const float vz = model->attrib.vertices[3 * idx.vertex_index + 2];
+                vertices[vertex] = glm::vec4(vx, vy, vz, 1.0);
+            }
+
+            const glm::vec4 a = vertices[0];
+            const glm::vec4 b = vertices[1];
+            const glm::vec4 c = vertices[2];
+
+            // cálculo da normal de um triângulo cujos vértices
+            // estão nos pontos "a", "b", e "c", definidos no sentido anti-horário.
+
+            const glm::vec4 vab = b - a;
+            const glm::vec4 vac = c - a;
+            const glm::vec4 n = crossproduct(vab, vac);
+
+            // Slide 163 das Aulas 17 e 18 - Modelos de Iluminação
+
+            for (size_t vertex = 0; vertex < 3; ++vertex)
+            {
+                tinyobj::index_t idx = model->shapes[shape].mesh.indices[3 * triangle + vertex];
+                num_triangles_per_vertex[idx.vertex_index] += 1;
+                vertex_normals[idx.vertex_index] += n;
+                model->shapes[shape].mesh.indices[3 * triangle + vertex].normal_index = idx.vertex_index;
+            }
+        }
+    }
+
+    model->attrib.normals.resize(3 * num_vertices);
+
+    for (size_t i = 0; i < vertex_normals.size(); ++i)
+    {
+        glm::vec4 n = vertex_normals[i] / (float)num_triangles_per_vertex[i];
+        n /= norm(n);
+        model->attrib.normals[3 * i + 0] = n.x;
+        model->attrib.normals[3 * i + 1] = n.y;
+        model->attrib.normals[3 * i + 2] = n.z;
+    }
+}
+
+
+
+
 
 // Função para debugging: imprime no terminal todas informações de um modelo
 // geométrico carregado de um arquivo ".obj".
@@ -880,59 +1002,6 @@ void PrintObjModelInfo(ObjModel *model)
     }
 }
 
-// Função que carrega uma imagem para ser utilizada como textura
-void LoadTextureImage(const char* filename)
-{
-    printf("Carregando imagem \"%s\"... ", filename);
-
-    // Primeiro fazemos a leitura da imagem do disco
-    stbi_set_flip_vertically_on_load(true);
-    int width;
-    int height;
-    int channels;
-    unsigned char *data = stbi_load(filename, &width, &height, &channels, 3);
-
-    if ( data == NULL )
-    {
-        fprintf(stderr, "ERROR: Cannot open image file \"%s\".\n", filename);
-        std::exit(EXIT_FAILURE);
-    }
-
-    printf("OK (%dx%d).\n", width, height);
-
-    // Agora criamos objetos na GPU com OpenGL para armazenar a textura
-    GLuint texture_id;
-    GLuint sampler_id;
-    glGenTextures(1, &texture_id);
-    glGenSamplers(1, &sampler_id);
-
-    // Veja slides 95-96 do documento Aula_20_Mapeamento_de_Texturas.pdf
-    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glSamplerParameteri(sampler_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    // Parâmetros de amostragem da textura.
-    glSamplerParameteri(sampler_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glSamplerParameteri(sampler_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Agora enviamos a imagem lida do disco para a GPU
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-
-    GLuint textureunit = g_NumLoadedTextures;
-    glActiveTexture(GL_TEXTURE0 + textureunit);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glBindSampler(textureunit, sampler_id);
-
-    stbi_image_free(data);
-
-    g_NumLoadedTextures += 1;
-}
-
-
 void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def)
 {
     glm::mat4 model = Matrix_Translate(x, y, z) * Matrix_Scale(0.6f, 0.6f, 1.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
@@ -943,63 +1012,3 @@ void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_
 }
 
 
-void drawMap(glm::mat4 model)
-{
-    for (int i = 0; i < DimLab; i++)
-    {
-        for (int j = 0; j < DimLab; j++)
-        {
-            float lado = 50;
-            float altura = 35;
-             model = Matrix_Translate(lado*(i-1), altura*Labirinto[i][j] - 17.5, lado*(j-1)) * Matrix_Scale(lado, altura, lado);
-             glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-
-            if (Labirinto[i][j] == 1) {
-                glUniform1i(g_object_id_uniform, WALL_CUBE);
-                DrawVirtualObject("the_cube");
-             }
-            else {
-                glUniform1i(g_object_id_uniform, FLOOR_CUBE);
-                DrawVirtualObject("the_cube");
-             }
- }
- }
-}
-
-
-
-
-void readMap(FILE *arquivo) {
-    // Abre o arquivo usando um caminho relativo.
-
-    arquivo = fopen("../../labirinto.txt", "r+");
-
-    // Verifica se a abertura do arquivo foi bem-sucedida.
-    if (arquivo == NULL)
-    {
-        printf("Nao foi possivel abrir o arquivo.\n");
-        return; // Retorna um código de erro (er - mudar para 1);
-    }
-    else {
-    printf("Blablabla.\n");
-    }
-
-    for (int i = 0; i < DimLab; i++)
-    {
-        for (int j = 0; j < DimLab; j++)
-        {
-            char c = fgetc(arquivo);
-            switch (c)
-            {
-            case 'X':
-                Labirinto[i][j] = 1;
-                break;
-            case ' ':
-                Labirinto[i][j] = 0;
-                break;
-            }
-        }
-        fgetc(arquivo); // quebra de linha
-    }
-    fclose(arquivo);
-}
