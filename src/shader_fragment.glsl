@@ -13,6 +13,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 in vec4 position_model;
+in vec2 textcoords;
 
 
 // Identificador que define qual objeto está sendo desenhado no momento
@@ -26,12 +27,11 @@ in vec4 position_model;
 #define SCORPION 6
 #define WALL_CUBE 7
 #define FLOOR_CUBE 8
-#define FENCEA 9
-#define FENCEB 10
-#define BULLETA 11
-#define BULLETB 12
-#define BULLETC 13
-#define FAKE_CUBE 14
+#define BULLETA 9
+#define BULLETB 10
+#define BULLETC 11
+#define FAKE_CUBE 12
+#define GUN 13
 
 
 uniform int object_id;
@@ -112,6 +112,13 @@ void main()
     vec3 Ka; // Refletância ambiente
     float q; // Expoente especular para o modelo de iluminação de Phong
 
+
+     // Espectro da fonte de iluminação
+    vec3 I = vec3(1.0,1.0,1.0);           
+    // Espectro da luz ambiente
+    vec3 Ia = vec3(0.2,0.2,0.2);        
+
+
     // Coordenadas de textura
 
     float U = 0; 
@@ -153,16 +160,10 @@ void main()
         V = define_V_coeff(0); 
     }
 
-     else if (object_id == FENCEA) 
+    else if (object_id == GUN)  // Para a arma utilizaremos as coords de textura do proprio obj.
     {
-        U = define_U_coeff(1);
-        V = define_V_coeff(1); 
-    }
-
-     else if (object_id == FENCEB) 
-    {
-        U = define_U_coeff(1);
-        V = define_V_coeff(1); 
+        U = textcoords.x;
+        V = textcoords.y;
     }
 
      else if (object_id == BULLETA) 
@@ -213,17 +214,12 @@ void main()
     }
 
 
-    // Espectro da fonte de iluminação
-    vec3 I = vec3(1.0,1.0,1.0);           
-
-    // Espectro da luz ambiente
-    vec3 Ia = vec3(0.2,0.2,0.2);        
-
     // Termo difuso utilizando a lei dos cossenos de Lambert
 
     vec3 lambert_diffuse_term = vec3(0.0,0.0,0.0); 
     lambert_diffuse_term = Kd * I * max (0, dot(n,l));
 
+    
     // Termo ambiente
 
     vec3 ambient_term = vec3(0.1,0.1,0.1); 
@@ -233,7 +229,7 @@ void main()
     // Termo especular utilizando o modelo de iluminação de Blinn-Phong
 
     q = 0.5;
-    Ks = vec3(0.01,0.01,0.01);
+    Ks = vec3(0.05,0.05,0.05);
 
     vec4 h = (v+l) / length(v+l);
 
@@ -241,7 +237,7 @@ void main()
     blinn_phong_specular_term = Ks * I * pow (max (0, dot(n,h)) , q);
 
    // vec3 phong_specular_term  = vec3(0.0,0.0,0.0); 
-  //  phong_specular_term = Ks * I * pow (max (0, dot(r,v)) , q);
+   // phong_specular_term = Ks * I * pow (max (0, dot(r,v)) , q);
 
 
     // Equação de Iluminação de lambert (uma das partes do lambert_diffuse_term)
@@ -251,8 +247,7 @@ void main()
     if (object_id == WALL_CUBE) {     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0 , e assim por diante
 
        vec3 Kd = texture(TextureImage0, vec2(U,V)).rgb;
-       color.rgb = Kd * I * lambert + ambient_term + blinn_phong_specular_term;
-
+       color.rgb = Kd * (lambert + 0.01);
     }
 
     else if (object_id == FLOOR_CUBE) {
@@ -282,7 +277,7 @@ void main()
        color.rgb = Kd * (lambert + 0.01);
     }
 
-    else if (object_id == FENCEA || object_id == FENCEB ) {
+    else if (object_id == GUN) {
 
        vec3 Kd = texture(TextureImage4, vec2(U,V)).rgb;
        color.rgb = Kd * (lambert + 0.01);
@@ -297,9 +292,9 @@ void main()
     else if (object_id == FAKE_CUBE) 
     {
        vec3 Kd = texture(TextureImage6, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
-    }
+       color.rgb = Kd * I * lambert + ambient_term + blinn_phong_specular_term;
 
+    }
 
     else {
 
@@ -334,8 +329,10 @@ void main()
           // float minz = bbox_min.z;
           //  float maxz = bbox_max.z;
 
-                                                            // seguindo o slide 6
-                                                            // do link https://moodle.inf.ufrgs.br/pluginfile.php/199727/mod_resource/content/2/Aula_22_Laboratorio_5.pdf
+        // seguindo o slide 6
+        // do link https://moodle.inf.ufrgs.br/pluginfile.php/199727/mod_resource/content/2/Aula_22_Laboratorio_5.pdf
+        
+        
         U = (position_model.x - minx) / (maxx - minx);
 
         }

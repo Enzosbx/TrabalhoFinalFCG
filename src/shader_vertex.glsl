@@ -28,7 +28,7 @@ uniform vec4 bbox_max;
 #define M_PI_2 1.57079632679489661923
 
 
-
+out vec2 textcoords;
 out vec4 position_world;
 out vec4 position_model;
 out vec4 normal;
@@ -81,6 +81,8 @@ void main()
 
     U = (position_model.x - minx) / (maxx - minx);
     V = (position_model.y - miny) / (maxy - miny);
+
+    textcoords = texture_coefficients;
 
 
     vec3 Kd = texture(TextureImage2,vec2(U,V)).rgb;

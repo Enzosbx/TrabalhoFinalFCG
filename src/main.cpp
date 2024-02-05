@@ -51,12 +51,11 @@
 #define SCORPION 6
 #define WALL_CUBE 7
 #define FLOOR_CUBE 8
-#define FENCEA 9
-#define FENCEB 10
-#define BULLETA 11
-#define BULLETB 12
-#define BULLETC 13
-#define FAKE_CUBE 14
+#define BULLETA 9
+#define BULLETB 10
+#define BULLETC 11
+#define FAKE_CUBE 12
+#define GUN 13
 
 GLFWwindow *window;
 
@@ -292,10 +291,6 @@ int main(int argc, char *argv[])
     ComputeNormals(&reapermodel);
     BuildTrianglesAndAddToVirtualScene(&reapermodel);
 
-    ObjModel fencemodel("../../data/fence.obj");
-    ComputeNormals(&fencemodel);
-    BuildTrianglesAndAddToVirtualScene(&fencemodel);
-
     ObjModel wall_cubemodel("../../data/cube.obj");
     ComputeNormals(&wall_cubemodel);
     BuildTrianglesAndAddToVirtualScene(&wall_cubemodel);
@@ -311,6 +306,10 @@ int main(int argc, char *argv[])
     ObjModel bullet_model("../../data/Bullet.obj");
     ComputeNormals(&bullet_model);
     BuildTrianglesAndAddToVirtualScene(&bullet_model);
+
+    ObjModel gun_model("../../data/Gun.obj");
+    ComputeNormals(&gun_model);
+    BuildTrianglesAndAddToVirtualScene(&gun_model);
 
     if (argc > 1)
     {
@@ -329,7 +328,7 @@ int main(int argc, char *argv[])
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    float prev_time_d = glfwGetTime(); // variavel utilizada na animação da porta.
+    float prev_time_d = glfwGetTime(); // variavel utilizada na animação da arma.
 
     glLoadIdentity();
 
@@ -486,17 +485,13 @@ int main(int argc, char *argv[])
         float delta_t = time_now - prev_time_d;
         prev_time = time_now;
 
-        model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f, 0.5f, 0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, FENCEA);
-        DrawVirtualObject("the_fencea");
+        // DESENHAMOS O MODELO DA ARMA
 
-        model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f, 0.5f, 0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t);
+        model = Matrix_Translate(0.0f, 0.0f, 50.0f) * Matrix_Scale(8.0f, 8.0f, 8.0f) * Matrix_Rotate_Y(g_AngleY + delta_t);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, FENCEB);
-        DrawVirtualObject("the_fenceb");
-
-        // Desenhamos o modelo da bala
+        glUniform1i(g_object_id_uniform, GUN);
+        DrawVirtualObject("the_gun");
+       
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
