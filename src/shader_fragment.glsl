@@ -146,13 +146,7 @@ void main()
         Ka = vec3(0.0,0.0,0.0);
         q = 1.0;
     }
-
-    else if ( object_id == REAPER )   
-    {
-        U = define_U_coeff(0);
-        V = define_V_coeff(0);     
-    }
-
+    
     else if ( object_id == SCORPION )   
     {
         U = define_U_coeff(0);

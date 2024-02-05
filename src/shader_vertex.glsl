@@ -67,9 +67,10 @@ void main()
     // Refletância especular
 
     vec3 Ks; 
+    Ks = vec3(0.001f,0.001f,0.001f);
 
 
-    int q = 1;
+    float q = 1.0;
 
 
     float minx = bbox_min.x;   
@@ -97,6 +98,9 @@ void main()
 
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
+
+
+    l = v;
 
     float lambert = max(0,dot(n,l));
 
