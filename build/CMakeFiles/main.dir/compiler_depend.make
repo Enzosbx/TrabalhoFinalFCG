@@ -189,7 +189,24 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_tempbuf.h \
   C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/uniform_int_dist.h \
   C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/iostream \
-  ../include/glad/glad.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/thread \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/chrono \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ratio \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ctime \
+  C:/Program\ Files/MinGW/include/time.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/parse_numbers.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/memory \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_raw_storage_iter.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ext/concurrence.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/unique_ptr.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr_base.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/allocated_ptr.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/refwrap.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr_atomic.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/atomic_base.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/atomic_lockfree_defines.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/backward/auto_ptr.h \
   C:/Program\ Files/MinGW/include/windows.h \
   C:/Program\ Files/MinGW/include/windef.h \
   C:/Program\ Files/MinGW/include/winnt.h \
@@ -209,6 +226,48 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   C:/Program\ Files/MinGW/include/winreg.h \
   C:/Program\ Files/MinGW/include/reason.h \
   C:/Program\ Files/MinGW/include/winsvc.h \
+  C:/Program\ Files/MinGW/include/cderr.h \
+  C:/Program\ Files/MinGW/include/dde.h \
+  C:/Program\ Files/MinGW/include/ddeml.h \
+  C:/Program\ Files/MinGW/include/dlgs.h \
+  C:/Program\ Files/MinGW/include/imm.h \
+  C:/Program\ Files/MinGW/include/lzexpand.h \
+  C:/Program\ Files/MinGW/include/mmsystem.h \
+  C:/Program\ Files/MinGW/include/nb30.h \
+  C:/Program\ Files/MinGW/include/rpc.h \
+  C:/Program\ Files/MinGW/include/windows.h \
+  C:/Program\ Files/MinGW/include/rpcdce.h \
+  C:/Program\ Files/MinGW/include/basetyps.h \
+  C:/Program\ Files/MinGW/include/rpcdcep.h \
+  C:/Program\ Files/MinGW/include/rpcnsi.h \
+  C:/Program\ Files/MinGW/include/rpcnterr.h \
+  C:/Program\ Files/MinGW/include/shellapi.h \
+  C:/Program\ Files/MinGW/include/pshpack2.h \
+  C:/Program\ Files/MinGW/include/winperf.h \
+  C:/Program\ Files/MinGW/include/commdlg.h \
+  C:/Program\ Files/MinGW/include/unknwn.h \
+  C:/Program\ Files/MinGW/include/objfwd.h \
+  C:/Program\ Files/MinGW/include/wtypes.h \
+  C:/Program\ Files/MinGW/include/rpcndr.h \
+  C:/Program\ Files/MinGW/include/rpcnsip.h \
+  C:/Program\ Files/MinGW/include/prsht.h \
+  C:/Program\ Files/MinGW/include/winspool.h \
+  C:/Program\ Files/MinGW/include/winsock.h \
+  C:/Program\ Files/MinGW/include/winsock2.h \
+  C:/Program\ Files/MinGW/include/sys/bsdtypes.h \
+  C:/Program\ Files/MinGW/include/sys/time.h \
+  C:/Program\ Files/MinGW/include/nspapi.h \
+  C:/Program\ Files/MinGW/include/wtypes.h \
+  C:/Program\ Files/MinGW/include/ole2.h \
+  C:/Program\ Files/MinGW/include/objbase.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/stdlib.h \
+  C:/Program\ Files/MinGW/include/objidl.h \
+  C:/Program\ Files/MinGW/include/cguid.h \
+  C:/Program\ Files/MinGW/include/olectlid.h \
+  C:/Program\ Files/MinGW/include/oleauto.h \
+  C:/Program\ Files/MinGW/include/oaidl.h \
+  C:/Program\ Files/MinGW/include/oleidl.h \
+  ../include/glad/glad.h \
   ../include/KHR/khrplatform.h \
   ../include/GLFW/glfw3.h \
   ../include/glm/mat4x4.hpp \
@@ -402,7 +461,8 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   ../include/text.h \
   ../include/utils.h \
   ../include/dejavufont.h \
-  ../include/callbacks.h
+  ../include/callbacks.h \
+  ../include/player.h
 
 CMakeFiles/main.dir/src/stb_image.cpp.obj: ../src/stb_image.cpp \
   ../include/stb_image.h \
@@ -647,6 +707,8 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/stdarg.h:
 
 C:/Program\ Files/MinGW/include/stdlib.h:
 
+C:/Program\ Files/MinGW/include/shellapi.h:
+
 C:/Program\ Files/MinGW/include/errno.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/math.h:
@@ -673,11 +735,17 @@ C:/Program\ Files/MinGW/include/string.h:
 
 ../include/glm/ext/vector_uint2_precision.hpp:
 
+C:/Program\ Files/MinGW/include/ddeml.h:
+
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ext/type_traits.h:
+
+C:/Program\ Files/MinGW/include/ole2.h:
 
 C:/Program\ Files/MinGW/include/winsvc.h:
 
 ../include/glm/mat2x3.hpp:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/backward/auto_ptr.h:
 
 C:/Program\ Files/MinGW/include/winreg.h:
 
@@ -696,6 +764,8 @@ C:/Program\ Files/MinGW/include/winnls.h:
 C:/Program\ Files/MinGW/include/windef.h:
 
 ../include/glm/ext/quaternion_double_precision.hpp:
+
+C:/Program\ Files/MinGW/include/cguid.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/functexcept.h:
 
@@ -727,6 +797,10 @@ C:/Program\ Files/MinGW/include/inttypes.h:
 
 ../include/glm/ext/vector_double1_precision.hpp:
 
+C:/Program\ Files/MinGW/include/objbase.h:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ctime:
+
 C:/Program\ Files/MinGW/include/wincon.h:
 
 C:/Program\ Files/MinGW/include/winbase.h:
@@ -743,6 +817,10 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_function.h:
 
 C:/Program\ Files/MinGW/include/winuser.h:
 
+C:/Program\ Files/MinGW/include/mmsystem.h:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ext/concurrence.h:
+
 C:/Program\ Files/MinGW/include/winver.h:
 
 ../include/glm/ext/matrix_float4x2.hpp:
@@ -754,6 +832,8 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_tree.h:
 C:/Program\ Files/MinGW/include/winnetwk.h:
 
 ../include/glm/detail/compute_common.hpp:
+
+C:/Program\ Files/MinGW/include/winsock2.h:
 
 C:/Program\ Files/MinGW/include/reason.h:
 
@@ -799,9 +879,13 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/type_traits:
 
 ../include/glm/detail/type_mat3x4.hpp:
 
+C:/Program\ Files/MinGW/include/rpcdcep.h:
+
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_iterator_base_funcs.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_iterator.h:
+
+C:/Program\ Files/MinGW/include/winperf.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/ptr_traits.h:
 
@@ -816,6 +900,8 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/c++alloca
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ext/new_allocator.h:
 
 ../include/glm/ext/vector_relational.hpp:
+
+C:/Program\ Files/MinGW/include/sys/bsdtypes.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/new:
 
@@ -913,6 +999,8 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cctype:
 
 C:/Program\ Files/MinGW/include/ctype.h:
 
+C:/Program\ Files/MinGW/include/dlgs.h:
+
 C:/Program\ Files/MinGW/include/wctype.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/ostream_insert.h:
@@ -931,6 +1019,8 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/basic_string.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ext/atomicity.h:
 
+C:/Program\ Files/MinGW/include/nspapi.h:
+
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/algorithm:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/atomic_word.h:
@@ -942,6 +1032,8 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cerrno:
 ../include/glm/ext/quaternion_geometric.hpp:
 
 ../include/glm/ext/scalar_constants.hpp:
+
+C:/Program\ Files/MinGW/include/unknwn.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/functional_hash.h:
 
@@ -983,11 +1075,15 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/limits:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/mingw32/bits/error_constants.h:
 
+C:/Program\ Files/MinGW/include/basetyps.h:
+
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/streambuf:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/streambuf.tcc:
 
 ../include/glm/detail/type_vec3.hpp:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr_atomic.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/basic_ios.h:
 
@@ -1029,6 +1125,10 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/sstream.tcc:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_algo.h:
 
+C:/Program\ Files/MinGW/include/rpcnsi.h:
+
+C:/Program\ Files/MinGW/include/nb30.h:
+
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/algorithmfwd.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_heap.h:
@@ -1038,6 +1138,106 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_heap.h:
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_tempbuf.h:
 
 C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/iostream:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/thread:
+
+../include/glm/mat3x3.hpp:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/chrono:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ratio:
+
+../include/glm/ext/matrix_float2x4.hpp:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/parse_numbers.h:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/memory:
+
+../include/glm/ext/quaternion_common.inl:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_raw_storage_iter.h:
+
+../include/glm/ext/vector_float1_precision.hpp:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/unique_ptr.h:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr.h:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr_base.h:
+
+../include/glm/ext/vector_float2.hpp:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/allocated_ptr.h:
+
+../include/glm/ext/quaternion_relational.inl:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/refwrap.h:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/atomic_base.h:
+
+../include/glm/ext/matrix_float2x2.hpp:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/atomic_lockfree_defines.h:
+
+C:/Program\ Files/MinGW/include/cderr.h:
+
+C:/Program\ Files/MinGW/include/dde.h:
+
+C:/Program\ Files/MinGW/include/imm.h:
+
+C:/Program\ Files/MinGW/include/lzexpand.h:
+
+C:/Program\ Files/MinGW/include/rpcdce.h:
+
+C:/Program\ Files/MinGW/include/rpc.h:
+
+C:/Program\ Files/MinGW/include/winsock.h:
+
+C:/Program\ Files/MinGW/include/rpcnterr.h:
+
+C:/Program\ Files/MinGW/include/pshpack2.h:
+
+C:/Program\ Files/MinGW/include/commdlg.h:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/stdlib.h:
+
+C:/Program\ Files/MinGW/include/objfwd.h:
+
+C:/Program\ Files/MinGW/include/wtypes.h:
+
+../include/glm/ext/vector_float3_precision.hpp:
+
+C:/Program\ Files/MinGW/include/rpcndr.h:
+
+C:/Program\ Files/MinGW/include/rpcnsip.h:
+
+../include/glm/trigonometric.hpp:
+
+C:/Program\ Files/MinGW/include/prsht.h:
+
+C:/Program\ Files/MinGW/include/winspool.h:
+
+../include/glm/gtc/constants.hpp:
+
+../include/glm/ext/vector_uint3_precision.hpp:
+
+C:/Program\ Files/MinGW/include/sys/time.h:
+
+C:/Program\ Files/MinGW/include/objidl.h:
+
+C:/Program\ Files/MinGW/include/olectlid.h:
+
+C:/Program\ Files/MinGW/include/oleauto.h:
+
+../include/glm/ext/matrix_float3x3.hpp:
+
+../include/glm/ext/vector_double4_precision.hpp:
+
+C:/Program\ Files/MinGW/include/oaidl.h:
+
+../include/glm/gtc/type_ptr.hpp:
+
+C:/Program\ Files/MinGW/include/oleidl.h:
 
 ../include/GLFW/glfw3.h:
 
@@ -1079,8 +1279,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cstddef:
 
 ../include/glm/detail/type_vec2.inl:
 
-../include/glm/ext/vector_float2.hpp:
-
 ../include/glm/ext/vector_double2.hpp:
 
 ../include/glm/ext/vector_int2.hpp:
@@ -1101,15 +1299,9 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 
 ../include/glm/ext/vector_bool3_precision.hpp:
 
-../include/glm/ext/vector_float3_precision.hpp:
-
 ../include/glm/ext/vector_double3_precision.hpp:
 
 ../include/glm/ext/vector_uint3.hpp:
-
-../include/glm/gtc/constants.hpp:
-
-../include/glm/ext/vector_uint3_precision.hpp:
 
 ../include/glm/vec4.hpp:
 
@@ -1124,10 +1316,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 ../include/tiny_obj_loader.h:
 
 ../include/glm/ext/vector_double4.hpp:
-
-../include/glm/ext/matrix_float3x3.hpp:
-
-../include/glm/ext/vector_double4_precision.hpp:
 
 ../include/glm/ext/vector_int4.hpp:
 
@@ -1149,8 +1337,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 
 ../include/glm/ext/matrix_double2x2_precision.hpp:
 
-../include/glm/ext/matrix_float2x2.hpp:
-
 ../include/glm/detail/type_mat2x3.hpp:
 
 ../include/glm/ext/vector_uint1.hpp:
@@ -1167,8 +1353,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 
 ../include/glm/detail/type_mat2x4.hpp:
 
-../include/glm/ext/matrix_float2x4.hpp:
-
 ../include/glm/ext/matrix_float2x4_precision.hpp:
 
 ../include/glm/mat3x2.hpp:
@@ -1184,8 +1368,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 ../include/glm/gtc/vec1.hpp:
 
 ../include/glm/ext/matrix_float3x2_precision.hpp:
-
-../include/glm/mat3x3.hpp:
 
 ../include/glm/vector_relational.hpp:
 
@@ -1243,8 +1425,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 
 ../include/glm/ext/matrix_float4x4_precision.hpp:
 
-../include/glm/gtc/type_ptr.hpp:
-
 ../include/glm/gtc/quaternion.hpp:
 
 ../include/glm/ext/quaternion_geometric.inl:
@@ -1255,8 +1435,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 
 ../include/glm/ext/matrix_projection.hpp:
 
-../include/glm/trigonometric.hpp:
-
 ../include/glm/detail/func_trigonometric.inl:
 
 ../include/glm/ext/matrix_clip_space.inl:
@@ -1265,11 +1443,7 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 
 ../include/glm/ext/quaternion_common.hpp:
 
-../include/glm/ext/quaternion_common.inl:
-
 ../include/glm/detail/type_quat.hpp:
-
-../include/glm/ext/quaternion_relational.inl:
 
 ../include/glm/ext/quaternion_double.hpp:
 
@@ -1282,8 +1456,6 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_set.h:
 ../include/glm/gtc/quaternion.inl:
 
 ../include/glm/gtc/epsilon.hpp:
-
-../include/glm/ext/vector_float1_precision.hpp:
 
 ../include/glm/ext/vector_int1.hpp:
 
@@ -1301,9 +1473,9 @@ C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/cstring:
 
 ../include/callbacks.h:
 
-../src/stb_image.cpp:
+../include/player.h:
 
-C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/stdlib.h:
+../src/stb_image.cpp:
 
 ../src/textrendering.cpp:
 

@@ -14,8 +14,6 @@ uniform mat4 projection;
 
 in vec4 position_model;
 
-// Coordenadas de textura obtidas do arquivo OBJ
-in vec2 textcoords;
 
 // Identificador que define qual objeto está sendo desenhado no momento
 
@@ -30,6 +28,12 @@ in vec2 textcoords;
 #define FLOOR_CUBE 8
 #define FENCEA 9
 #define FENCEB 10
+#define BULLETA 11
+#define BULLETB 12
+#define BULLETC 13
+#define FAKE_CUBE 14
+
+
 uniform int object_id;
 
 
@@ -43,9 +47,20 @@ uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
 uniform sampler2D TextureImage4;
+uniform sampler2D TextureImage5;
+uniform sampler2D TextureImage6;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
+
+
+// No caso do Reaper, em que será usado modelo de Gouraud, é preciso também
+// definir a entrada ("in") vinda do vertex shader, segundo os slides 197 e 198
+// das aulas 17 e 18 - Modelos de iluminação
+
+in vec4 cor_v;
+
+
 
 // Constantes
 #define M_PI   3.14159265358979323846
@@ -84,13 +99,14 @@ void main()
     // Caso queiramos que a fonte de luz seja a câmera, basta descomentar a linha abaixo
      // sentido da fonte de luz = sentido da cÂmera!
 
-    l = v;    // tarefa 2.1 lab 04
+     l = v;    // tarefa 2.1 lab 04
 
     // Vetor que define o sentido da reflexão especular ideal.   // ch
     vec4 r = vec4(0.0,0.0,0.0,0.0); 
     r = 2 * n * dot(n,l) - l;
 
     // Parâmetros que definem as propriedades espectrais da superfície
+   
     vec3 Kd; // Refletância difusa
     vec3 Ks; // Refletância especular
     vec3 Ka; // Refletância ambiente
@@ -155,11 +171,38 @@ void main()
         V = define_V_coeff(1); 
     }
 
+     else if (object_id == BULLETA) 
+    {
+        U = define_U_coeff(0);
+        V = define_V_coeff(0); 
+    }
+
+     else if (object_id == BULLETB) 
+    {
+        U = define_U_coeff(0);
+        V = define_V_coeff(0); 
+    }
+
+    
+     else if (object_id == BULLETC) 
+    {
+        U = define_U_coeff(0);
+        V = define_V_coeff(0); 
+    }
+
+
     else if (object_id == WALL_CUBE) 
     {
         U = define_U_coeff(1);
         V = define_V_coeff(1);                   
     }
+
+    else if (object_id == FAKE_CUBE) 
+    {
+        U = define_U_coeff(1);
+        V = define_V_coeff(1);                   
+    }
+
 
      else if (object_id == FLOOR_CUBE) 
     {                                 
@@ -188,21 +231,33 @@ void main()
     lambert_diffuse_term = Kd * I * max (0, dot(n,l));
 
     // Termo ambiente
-    vec3 ambient_term = vec3(0.0,0.0,0.0); 
+
+    vec3 ambient_term = vec3(0.1,0.1,0.1); 
     ambient_term = Ka * Ia;
 
-    // Termo especular utilizando o modelo de iluminação de Phong
-    vec3 phong_specular_term  = vec3(0.0,0.0,0.0); 
-    phong_specular_term = Ks * I * pow (max (0, dot(r,v)) , q);
+   
+    // Termo especular utilizando o modelo de iluminação de Blinn-Phong
 
-    // Equação de Iluminação
+    q = 0.5;
+    Ks = vec3(0.01,0.01,0.01);
+
+    vec4 h = (v+l) / length(v+l);
+
+    vec3 blinn_phong_specular_term  = vec3(0.0,0.0,0.0); 
+    blinn_phong_specular_term = Ks * I * pow (max (0, dot(n,h)) , q);
+
+   // vec3 phong_specular_term  = vec3(0.0,0.0,0.0); 
+  //  phong_specular_term = Ks * I * pow (max (0, dot(r,v)) , q);
+
+
+    // Equação de Iluminação de lambert (uma das partes do lambert_diffuse_term)
 
     float lambert = max(0,dot(n,l));  
   
     if (object_id == WALL_CUBE) {     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0 , e assim por diante
 
        vec3 Kd = texture(TextureImage0, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb = Kd * I * lambert + ambient_term + blinn_phong_specular_term;
 
     }
 
@@ -211,6 +266,14 @@ void main()
        vec3 Kd = texture(TextureImage1, vec2(U,V)).rgb;
        color.rgb = Kd * (lambert + 0.01);
 
+    }
+
+     else if ( object_id == REAPER )
+    {
+        // Todas as caracteristicas de iluminação do REAPER
+        // foram definidas no vertex shader
+
+        color = cor_v;
     }
 
     else if (object_id == REAPER) {
@@ -225,21 +288,33 @@ void main()
        color.rgb = Kd * (lambert + 0.01);
     }
 
-    else if (object_id == FENCEA) {
+    else if (object_id == FENCEA || object_id == FENCEB ) {
 
        vec3 Kd = texture(TextureImage4, vec2(U,V)).rgb;
        color.rgb = Kd * (lambert + 0.01);
     }
 
-    else if (object_id == FENCEB) {
-       vec3 Kd = texture(TextureImage4, vec2(U,V)).rgb;
+    else if (object_id == BULLETA || object_id == BULLETB || object_id == BULLETC) 
+    {
+       vec3 Kd = texture(TextureImage5, vec2(U,V)).rgb;
        color.rgb = Kd * (lambert + 0.01);
     }
+
+    else if (object_id == FAKE_CUBE) 
+    {
+       vec3 Kd = texture(TextureImage6, vec2(U,V)).rgb;
+       color.rgb = Kd * (lambert + 0.01);
+    }
+
 
     else {
+
+
       // Cor final do fragmento calculada com uma combinação dos termos difuso,
       // especular, e ambiente. Veja slide 129 do documento Aula_17_e_18_Modelos_de_Iluminacao.pdf.
-    color.rgb = lambert_diffuse_term + ambient_term + phong_specular_term;
+
+      color.rgb = lambert_diffuse_term + ambient_term + blinn_phong_specular_term;
+
     }
 
 
@@ -248,7 +323,6 @@ void main()
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
     color.rgb = pow(color.rgb, vec3(1.0,1.0,1.0)/2.2);
-
 
 } 
 

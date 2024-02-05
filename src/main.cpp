@@ -15,6 +15,12 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
+#include <thread>
+
+#include <Windows.h>
+/*#include <GL/gl.h>
+#include <GL/glu.h>
+#include <iostream>*/
 
 // Headers das bibliotecas OpenGL
 #include <glad/glad.h>  // Criação de contexto OpenGL 3.3
@@ -29,27 +35,42 @@
 #include <stb_image.h>
 #include <tiny_obj_loader.h>
 
-
 // Headers locais, definidos na pasta "include/"
 #include "utils.h"
 #include "matrices.h"
 #include "callbacks.h"
 #include "shaders.h"
 #include "text.h"
+#include "player.h"
 
+#define STONE_EYES 1 // Definição de todos as figuras existentes nos objs.
+#define STONE_HANDS_LEGS 2
+#define STONE_HEAD 3
+#define STONE_TORSO 4
+#define REAPER 5
+#define SCORPION 6
+#define WALL_CUBE 7
+#define FLOOR_CUBE 8
+#define FENCEA 9
+#define FENCEB 10
+#define BULLETA 11
+#define BULLETB 12
+#define BULLETC 13
+#define FAKE_CUBE 14
 
+GLFWwindow *window;
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
 struct ObjModel
 {
-    tinyobj::attrib_t                 attrib;
-    std::vector<tinyobj::shape_t>     shapes;
-    std::vector<tinyobj::material_t>  materials;
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
 
     // Este construtor lê o modelo de um arquivo utilizando a biblioteca tinyobjloader.
     // Veja: https://github.com/syoyo/tinyobjloader
-    ObjModel(const char* filename, const char* basepath = NULL, bool triangulate = true)
+    ObjModel(const char *filename, const char *basepath = NULL, bool triangulate = true)
     {
         printf("Carregando objetos do arquivo \"%s\"...\n", filename);
 
@@ -63,7 +84,7 @@ struct ObjModel
             auto i = fullpath.find_last_of("/");
             if (i != std::string::npos)
             {
-                dirname = fullpath.substr(0, i+1);
+                dirname = fullpath.substr(0, i + 1);
                 basepath = dirname.c_str();
             }
         }
@@ -87,7 +108,7 @@ struct ObjModel
                         "Erro: Objeto sem nome dentro do arquivo '%s'.\n"
                         "Veja https://www.inf.ufrgs.br/~eslgastal/fcg-faq-etc.html#Modelos-3D-no-formato-OBJ .\n"
                         "*********************************************\n",
-                    filename);
+                        filename);
                 throw std::runtime_error("Objeto sem nome.");
             }
             printf("- Objeto '%s'\n", shapes[shape].name.c_str());
@@ -99,21 +120,17 @@ struct ObjModel
 
 // Outras funções, que estão implementadas após a main.
 
-
-void BuildTrianglesAndAddToVirtualScene(ObjModel *);       // Constrói representação de um ObjModel como malha de triângulos para renderização
-void ComputeNormals(ObjModel *model);                  // Computa normais de um ObjModel, caso não existam.
-void LoadTextureImage(const char* filename);          // Função que carrega imagens de textura
-void DrawVirtualObject(const char *object_name);    // Desenha um objeto armazenado em g_VirtualScene
+void BuildTrianglesAndAddToVirtualScene(ObjModel *);                                  // Constrói representação de um ObjModel como malha de triângulos para renderização
+void ComputeNormals(ObjModel *model);                                                 // Computa normais de um ObjModel, caso não existam.
+void LoadTextureImage(const char *filename);                                          // Função que carrega imagens de textura
+void DrawVirtualObject(const char *object_name);                                      // Desenha um objeto armazenado em g_VirtualScene
 void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def); // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
-void PrintObjModelInfo(ObjModel *);           // Função para debugging
+void PrintObjModelInfo(ObjModel *);                                                   // Função para debugging
 
 // Funções e definições relativas ao mapa
 
-#define DimLab 19
 void drawMap(glm::mat4 model); // Desenha o mapa do jogo
-void readMap(FILE *arquivo);  // Lê o mapaa
-int Labirinto[DimLab][DimLab];
-       
+void readMap(FILE *arquivo);   // Lê o mapaa
 
 // Definimos uma estrutura que armazenará dados necessários para renderizar
 // cada objeto da cena virtual.
@@ -124,9 +141,25 @@ struct SceneObject
     size_t num_indices;            // Número de índices do objeto dentro do vetor indices[] definido em BuildTrianglesAndAddToVirtualScene()
     GLenum rendering_mode;         // Modo de rasterização (GL_TRIANGLES, GL_TRIANGLE_STRIP, etc.)
     GLuint vertex_array_object_id; // ID do VAO onde estão armazenados os atributos do modelo
-    glm::vec3    bbox_min;         // Axis-Aligned Bounding Box do objeto
-    glm::vec3    bbox_max;
+    glm::vec3 bbox_min;            // Axis-Aligned Bounding Box do objeto
+    glm::vec3 bbox_max;
 };
+
+int HitBullet(Bullet *bullet)
+{
+    if (Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].type == parede)
+    {
+        printf("%d %d, %d\n", (int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco, (int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco, Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].breakable);
+
+        if (Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].breakable == 1)
+        {
+            Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].type = chao;
+            Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].breakable = 0;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 // A cena virtual é uma lista de objetos nomeados, guardados em um dicionário
 // (map).  Veja dentro da função BuildTrianglesAndAddToVirtualScene() como que são incluídos
@@ -134,19 +167,27 @@ struct SceneObject
 // estes são acessados.
 std::map<std::string, SceneObject> g_VirtualScene;
 
-
 // Número de texturas carregadas pela função LoadTextureImage()
+
 GLuint g_NumLoadedTextures = 0;
 
+glm::mat4 model = Matrix_Identity();
+Bullet bullet;
 
 int main(int argc, char *argv[])
 {
     // Inicializamos a biblioteca GLFW, utilizada para criar uma janela do
     // sistema operacional, onde poderemos renderizar com OpenGL.
-
     FILE *arquivo;
 
-    readMap(arquivo);  // Leitura do arquivo contendo o mapa
+    HWND hDesktop = GetDesktopWindow();
+    RECT desktopRect;
+    GetWindowRect(hDesktop, &desktopRect);
+
+    int screenWidth = desktopRect.right;
+    int screenHeight = desktopRect.bottom;
+
+    readMap(arquivo); // Leitura do arquivo contendo o mapa
 
     int success = glfwInit();
     if (!success)
@@ -172,14 +213,15 @@ int main(int argc, char *argv[])
 
     // Criamos uma janela do sistema operacional, com 800 colunas e 600 linhas
     // de pixels, e com título "INF01047 ...".
-    GLFWwindow *window;
-    window = glfwCreateWindow(800, 600, "TrabFinal INF01047 - Enzo SBX e Geancarlo K", NULL, NULL);
+
+    window = glfwCreateWindow(screenWidth, screenHeight, "TrabFinal INF01047 - Enzo SBX e Geancarlo K", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
         fprintf(stderr, "ERROR: glfwCreateWindow() failed.\n");
         std::exit(EXIT_FAILURE);
     }
+    glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, screenWidth, screenHeight, GLFW_DONT_CARE);
 
     // Definimos a função de callback que será chamada sempre que o usuário
     // pressionar alguma tecla do teclado ...
@@ -202,7 +244,7 @@ int main(int argc, char *argv[])
     // redimensionada, por consequência alterando o tamanho do "framebuffer"
     // (região de memória onde são armazenados os pixels da imagem).
     glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
-    FramebufferSizeCallback(window, 800, 600); // Forçamos a chamada do callback acima, para definir g_ScreenRatio.
+    FramebufferSizeCallback(window, screenWidth, screenHeight); // Forçamos a chamada do callback acima, para definir g_ScreenRatio.
 
     // Imprimimos no terminal informações sobre a GPU do sistema
     const GLubyte *vendor = glGetString(GL_VENDOR);
@@ -211,19 +253,26 @@ int main(int argc, char *argv[])
     const GLubyte *glslversion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
     printf("GPU: %s, %s, OpenGL %s, GLSL %s\n", vendor, renderer, glversion, glslversion);
-    
-   
+
     // Carregamos os shaders de vértices e de fragmentos que serão utilizados
     // para renderização. Veja slides 180-200 do documento Aula_03_Rendering_Pipeline_Grafico.pdf.
     LoadShadersFromFiles();
-
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     // Carregamento das imagens de textura que serão utilizadas.
 
     LoadTextureImage("../../data/wood-texture.jpg");    // TextureImage0
-    LoadTextureImage("../../data/textura-pedra.jpeg");   // TextureImage1
-    LoadTextureImage("../../data/textura-caveira.jpg");   // TextureImage2 
-    LoadTextureImage("../../data/textura-carne.jpg");   // TextureImage3 
-    LoadTextureImage("../../data/textura-dourada.jpg");   // TextureImage4 
+    LoadTextureImage("../../data/textura-pedra.jpeg");  // TextureImage1
+    LoadTextureImage("../../data/textura-caveira.jpg"); // TextureImage2
+    LoadTextureImage("../../data/textura-carne.jpg");   // TextureImage3
+    LoadTextureImage("../../data/textura-dourada.jpg"); // TextureImage4
+    LoadTextureImage("../../data/textura-bala.jpg");    // TextureImage5
+    LoadTextureImage("../../data/fake-wood-texture.jpg");  // TextureImage6
+
+
+    /*for (int i = 0; i < NumEnemies; i++)
+    {
+        enemy[i] = CreateEnemy(3 + 2 * i, 3 + 2 * i);
+    }*/
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 
@@ -255,6 +304,14 @@ int main(int argc, char *argv[])
     ComputeNormals(&floor_cubemodel);
     BuildTrianglesAndAddToVirtualScene(&floor_cubemodel);
 
+    ObjModel fake_cubemodel = wall_cubemodel;
+    ComputeNormals(&fake_cubemodel);
+    BuildTrianglesAndAddToVirtualScene(&fake_cubemodel);
+
+    ObjModel bullet_model("../../data/Bullet.obj");
+    ComputeNormals(&bullet_model);
+    BuildTrianglesAndAddToVirtualScene(&bullet_model);
+
     if (argc > 1)
     {
         ObjModel model(argv[1]);
@@ -272,9 +329,11 @@ int main(int argc, char *argv[])
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
+    float prev_time_d = glfwGetTime(); // variavel utilizada na animação da porta.
 
-    float prev_time_d = glfwGetTime();  // variavel utilizada na animação da porta.
+    glLoadIdentity();
 
+    bullet.vivo = 0;
     // Ficamos em um loop infinito, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
     {
@@ -288,6 +347,11 @@ int main(int argc, char *argv[])
         //           R     G     B     A
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+        for (int i = 0; i < NumEnemies; i++)
+        {
+            WalkEnemy(&enemy[i]);
+        }
+
         // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
         // e também resetamos todos os pixels do Z-buffer (depth buffer).
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -295,33 +359,13 @@ int main(int argc, char *argv[])
         // Pedimos para a GPU utilizar o programa de GPU criado acima (contendo
         // os shaders de vértice e fragmentos).
         glUseProgram(g_GpuProgramID);
-
-        if (w_key_pressed == true)
-        {
-            camera_movement += glm::vec4{-w_vector.x*norm2D(), 0.0f, -w_vector.z*norm2D(), w_vector.w} * camera_speed;
-            // camera_movement += -w_vector * camera_speed;
-        }
-        if (a_key_pressed == true)
-        {
-            camera_movement += -u_vector * camera_speed;
-           //camera_movement += -u_vector * camera_speed;
-        }
-        if (s_key_pressed == true)
-        {
-            camera_movement += glm::vec4{w_vector.x*norm2D(), 0.0f, w_vector.z*norm2D(), w_vector.w} * camera_speed;
-           // camera_movement += w_vector * camera_speed;
-        }
-        if (d_key_pressed == true)
-        {
-            camera_movement += u_vector * camera_speed;
-           // camera_movement += u_vector * camera_speed;
-        }
+        walk();
 
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
         // definir o sistema de coordenadas da câmera.
         glm::mat4 view;
 
-        if (g_UseLookAtCamera)  
+        if (g_UseLookAtCamera)
         { // Look At Camera
             view = defineViewLACam(view);
         }
@@ -330,35 +374,30 @@ int main(int argc, char *argv[])
             view = defineViewFCam(view);
         }
 
+        if (g_LeftMouseButtonPressed && canShoot)
+        { // tiro
+            bullet = newBullet();
+            canShoot = 0;
+        }
+        else if (g_LeftMouseButtonPressed == false)
+            canShoot = 1;
+
         // Agora computamos a matriz de Projeção.
         glm::mat4 projection;
 
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo!
-        float nearplane = -0.1f; // Posição do "near plane"
+        float nearplane = -1.0f;  // Posição do "near plane"
         float farplane = -400.0f; // Posição do "far plane"
 
         projection = defineProjection(projection, nearplane, farplane);
 
-        glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
-
+        model = Matrix_Identity(); // Transformação identidade de modelagem
         // Enviamos as matrizes "view" e "projection" para a placa de vídeo
         // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
         // efetivamente aplicadas em todos os pontos.
         glUniformMatrix4fv(g_view_uniform, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(g_projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
-
-
-#define STONE_EYES 1        // Definição de todos as figuras existentes nos objs.
-#define STONE_HANDS_LEGS 2
-#define STONE_HEAD 3
-#define STONE_TORSO 4
-#define REAPER 5
-#define SCORPION 6
-#define WALL_CUBE 7
-#define FLOOR_CUBE 8
-#define FENCEA 9
-#define FENCEB 10
 
         // Desenhamos o mapa, com seus cubos
 
@@ -383,36 +422,81 @@ int main(int argc, char *argv[])
         DrawGolemInstance(-5.0f, 0.0f, 0.0f, "torso.001_ice.005", 4);
         */
 
-        // Desenhamos o modelo do reaper
+        if (bullet.vivo)
+        {
+            bullet.time -= 1;
+            if (bullet.time >= 0)
+            {
+                bullet.pos += bullet.veloc * bullet.dir;
+                // MOSTRAR TIRO
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                glUniform1i(g_object_id_uniform, BULLETA);
+                DrawVirtualObject("the_bulleta");
 
-        model = Matrix_Translate(100.0f, -17.5f, 180.0f)  * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(3.0f,3.0f,3.0f);
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                glUniform1i(g_object_id_uniform, BULLETB);
+                DrawVirtualObject("the_bulletb");
+
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                glUniform1i(g_object_id_uniform, BULLETC);
+                DrawVirtualObject("the_bulletc");
+                if (HitBullet(&bullet))
+                    bullet.vivo = 0;
+            }
+            else
+                bullet.vivo = 0;
+        }
+
+        /*model = Matrix_Translate(100.0f, -17.5f, 180.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(3.0f, 3.0f, 3.0f);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, REAPER);
-        DrawVirtualObject("the_reaper");
+        DrawVirtualObject("the_reaper");*/
 
-        // Desenhamos o modelo do escorpiao
+        for (int i = 0; i < NumEnemies; i++)
+        {
+            if (enemy[i].vivo)
+            {
+                switch (enemy[i].type)
+                {
+                case Scorpion:
 
-        model = Matrix_Translate(0.0f, -16.5f, 80.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(5.0f,5.0f,5.0f);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, SCORPION);
-        DrawVirtualObject("the_scorpion");
+                    model = Matrix_Translate(enemy[i].pos.x, -12.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i])) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(5.0f, 5.0f, 5.0f);
+                    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(g_object_id_uniform, SCORPION);
+                    DrawVirtualObject("the_scorpion");
+                    break;
+                case Golem:
 
+                    break;
+                case Reaper:
+                    model = Matrix_Translate(enemy[i].pos.x, -18.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i]) + pi) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(g_object_id_uniform, REAPER);
+                    DrawVirtualObject("the_reaper");
+                    break;
+                }
+            }
+        }
         // Desenhamos o modelo da cerca, com animação
 
         float time_now = glfwGetTime();
         float delta_t = time_now - prev_time_d;
         prev_time = time_now;
 
-        model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f,0.5f,0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t) ;
+        model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f, 0.5f, 0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, FENCEA);
         DrawVirtualObject("the_fencea");
 
-        model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f,0.5f,0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t);
+        model = Matrix_Translate(55.0f, -17.5f, 100.0f) * Matrix_Scale(0.25f, 0.5f, 0.37f) * Matrix_Rotate_Y(g_AngleY + delta_t);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, FENCEB);
         DrawVirtualObject("the_fenceb");
 
+        // Desenhamos o modelo da bala
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
@@ -420,6 +504,7 @@ int main(int argc, char *argv[])
         // chamada abaixo faz a troca dos buffers, mostrando para o usuário
         // tudo que foi renderizado pelas funções acima.
         // Veja o link: https://en.wikipedia.org/w/index.php?title=Multiple_buffering&oldid=793452829#Double_buffering_in_computer_graphics
+
         glfwSwapBuffers(window);
 
         // Verificamos com o sistema operacional se houve alguma interação do
@@ -436,7 +521,6 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-
 // Função que desenha um objeto armazenado em g_VirtualScene. Veja definição
 // dos objetos na função BuildTrianglesAndAddToVirtualScene().
 void DrawVirtualObject(const char *object_name)
@@ -446,14 +530,12 @@ void DrawVirtualObject(const char *object_name)
     // comentários detalhados dentro da definição de BuildTrianglesAndAddToVirtualScene().
     glBindVertexArray(g_VirtualScene[object_name].vertex_array_object_id);
 
-
-     // Setamos as variáveis "bbox_min" e "bbox_max" do fragment shader
+    // Setamos as variáveis "bbox_min" e "bbox_max" do fragment shader
     // com os parâmetros da axis-aligned bounding box (AABB) do modelo.
     glm::vec3 bbox_min = g_VirtualScene[object_name].bbox_min;
     glm::vec3 bbox_max = g_VirtualScene[object_name].bbox_max;
     glUniform4f(g_bbox_min_uniform, bbox_min.x, bbox_min.y, bbox_min.z, 1.0f);
     glUniform4f(g_bbox_max_uniform, bbox_max.x, bbox_max.y, bbox_max.z, 1.0f);
-
 
     // Pedimos para a GPU rasterizar os vértices dos eixos XYZ
     // apontados pelo VAO como linhas. Veja a definição de  ???   ---> isso é de algo anterior
@@ -470,7 +552,6 @@ void DrawVirtualObject(const char *object_name)
     // alterar o mesmo. Isso evita bugs.
     glBindVertexArray(0);
 }
-
 
 // Constrói triângulos para futura renderização a partir de um ObjModel.
 void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada para cada modelo/objeto do arquivo obj!!!!.
@@ -489,12 +570,11 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada
         size_t first_index = indices.size();
         size_t num_triangles = model->shapes[shape].mesh.num_face_vertices.size();
 
-
         const float minval = std::numeric_limits<float>::min();
         const float maxval = std::numeric_limits<float>::max();
 
-        glm::vec3 bbox_min = glm::vec3(maxval,maxval,maxval);
-        glm::vec3 bbox_max = glm::vec3(minval,minval,minval);
+        glm::vec3 bbox_min = glm::vec3(maxval, maxval, maxval);
+        glm::vec3 bbox_max = glm::vec3(minval, minval, minval);
 
         for (size_t triangle = 0; triangle < num_triangles; ++triangle)
         {
@@ -514,7 +594,6 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada
                 model_coefficients.push_back(vy);   // Y
                 model_coefficients.push_back(vz);   // Z
                 model_coefficients.push_back(1.0f); // W
-
 
                 bbox_min.x = std::min(bbox_min.x, vx);
                 bbox_min.y = std::min(bbox_min.y, vy);
@@ -557,7 +636,6 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada
         theobject.num_indices = last_index - first_index + 1; // Número de indices
         theobject.rendering_mode = GL_TRIANGLES;              // Índices correspondem ao tipo de rasterização GL_TRIANGLES.
         theobject.vertex_array_object_id = vertex_array_object_id;
-
 
         theobject.bbox_min = bbox_min;
         theobject.bbox_max = bbox_max;
@@ -623,9 +701,8 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *model) // fazmeos essa chamada
     glBindVertexArray(0);
 }
 
-
 // Função que carrega uma imagem para ser utilizada como textura
-void LoadTextureImage(const char* filename)
+void LoadTextureImage(const char *filename)
 {
     printf("Carregando imagem \"%s\"... ", filename);
 
@@ -636,7 +713,7 @@ void LoadTextureImage(const char* filename)
     int channels;
     unsigned char *data = stbi_load(filename, &width, &height, &channels, 3);
 
-    if ( data == NULL )
+    if (data == NULL)
     {
         fprintf(stderr, "ERROR: Cannot open image file \"%s\".\n", filename);
         std::exit(EXIT_FAILURE);
@@ -676,77 +753,47 @@ void LoadTextureImage(const char* filename)
     g_NumLoadedTextures += 1;
 }
 
-
-
-
 void drawMap(glm::mat4 model)
 {
     for (int i = 0; i < DimLab; i++)
     {
         for (int j = 0; j < DimLab; j++)
         {
-            float lado = 50;
-            float altura = 35;
-             model = Matrix_Translate(lado*(i-1), altura*Labirinto[i][j] - 17.5, lado*(j-1)) * Matrix_Scale(lado, altura, lado);
-             glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            if (Labirinto[i][j].type == parede)
+            {
+                if (Labirinto[i][j].breakable)
+                {
+                    // MODELO DO CUBO FALSO
 
-            if (Labirinto[i][j] == 1) {
-                glUniform1i(g_object_id_uniform, WALL_CUBE);
-                DrawVirtualObject("the_cube");
-             }
-            else {
+                    model = Matrix_Translate(lado_bloco * (i - 1), altura_bloco - 17.5, lado_bloco * (j - 1)) * Matrix_Scale(lado_bloco, altura_bloco, lado_bloco);
+                    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(g_object_id_uniform, FAKE_CUBE);
+                    DrawVirtualObject("the_cube");
+
+                }
+                else
+                {
+                    model = Matrix_Translate(lado_bloco * (i - 1), altura_bloco - 17.5, lado_bloco * (j - 1)) * Matrix_Scale(lado_bloco, altura_bloco, lado_bloco);
+                    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(g_object_id_uniform, WALL_CUBE);
+                    DrawVirtualObject("the_cube");
+                }
+            }
+            if (Labirinto[i][j].type == chao)
+            {
+                model = Matrix_Translate(lado_bloco * (i - 1), -17.5 - altura_bloco / 2, lado_bloco * (j - 1) + lado_bloco / 2) * Matrix_Scale(lado_bloco, altura_bloco, lado_bloco) * Matrix_Rotate_X(pi / 2);
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                 glUniform1i(g_object_id_uniform, FLOOR_CUBE);
                 DrawVirtualObject("the_cube");
-             }
- }
- }
-}
-
-
-
-
-void readMap(FILE *arquivo) {
-    // Abre o arquivo usando um caminho relativo.
-
-    arquivo = fopen("../../labirinto.txt", "r+");
-
-    // Verifica se a abertura do arquivo foi bem-sucedida.
-    if (arquivo == NULL)
-    {
-        printf("Nao foi possivel abrir o arquivo.\n");
-        return; // Retorna um código de erro (er - mudar para 1);
-    }
-    else {
-    printf("Blablabla.\n");
-    }
-
-    for (int i = 0; i < DimLab; i++)
-    {
-        for (int j = 0; j < DimLab; j++)
-        {
-            char c = fgetc(arquivo);
-            switch (c)
-            {
-            case 'X':
-                Labirinto[i][j] = 1;
-                break;
-            case ' ':
-                Labirinto[i][j] = 0;
-                break;
             }
         }
-        fgetc(arquivo); // quebra de linha
     }
-    fclose(arquivo);
 }
 
-
-
-// OBSERVAÇÃO : UTILIZAR ESSA FUNÇÃO DEPOIS PARA FAZER GOURAUD
 
 // Função que computa as normais de um ObjModel, caso elas não tenham sido
 // especificadas dentro do arquivo ".obj"
-void ComputeNormals(ObjModel *model)        
+void ComputeNormals(ObjModel *model)
 {
     if (!model->attrib.normals.empty())
         return;
@@ -813,10 +860,6 @@ void ComputeNormals(ObjModel *model)
         model->attrib.normals[3 * i + 2] = n.z;
     }
 }
-
-
-
-
 
 // Função para debugging: imprime no terminal todas informações de um modelo
 // geométrico carregado de um arquivo ".obj".
@@ -1010,5 +1053,3 @@ void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_
     DrawVirtualObject(obj_name);
     return;
 }
-
-

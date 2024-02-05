@@ -191,7 +191,24 @@ CMakeFiles/main.dir/src/main.cpp.obj
  C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_tempbuf.h
  C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/uniform_int_dist.h
  C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/iostream
- C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glad/glad.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/thread
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/chrono
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ratio
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ctime
+ C:/Program Files/MinGW/include/time.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/parse_numbers.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/memory
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/stl_raw_storage_iter.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/ext/concurrence.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/unique_ptr.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr_base.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/allocated_ptr.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/refwrap.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/shared_ptr_atomic.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/atomic_base.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/bits/atomic_lockfree_defines.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/backward/auto_ptr.h
  C:/Program Files/MinGW/include/windows.h
  C:/Program Files/MinGW/include/windef.h
  C:/Program Files/MinGW/include/winnt.h
@@ -211,6 +228,48 @@ CMakeFiles/main.dir/src/main.cpp.obj
  C:/Program Files/MinGW/include/winreg.h
  C:/Program Files/MinGW/include/reason.h
  C:/Program Files/MinGW/include/winsvc.h
+ C:/Program Files/MinGW/include/cderr.h
+ C:/Program Files/MinGW/include/dde.h
+ C:/Program Files/MinGW/include/ddeml.h
+ C:/Program Files/MinGW/include/dlgs.h
+ C:/Program Files/MinGW/include/imm.h
+ C:/Program Files/MinGW/include/lzexpand.h
+ C:/Program Files/MinGW/include/mmsystem.h
+ C:/Program Files/MinGW/include/nb30.h
+ C:/Program Files/MinGW/include/rpc.h
+ C:/Program Files/MinGW/include/windows.h
+ C:/Program Files/MinGW/include/rpcdce.h
+ C:/Program Files/MinGW/include/basetyps.h
+ C:/Program Files/MinGW/include/rpcdcep.h
+ C:/Program Files/MinGW/include/rpcnsi.h
+ C:/Program Files/MinGW/include/rpcnterr.h
+ C:/Program Files/MinGW/include/shellapi.h
+ C:/Program Files/MinGW/include/pshpack2.h
+ C:/Program Files/MinGW/include/winperf.h
+ C:/Program Files/MinGW/include/commdlg.h
+ C:/Program Files/MinGW/include/unknwn.h
+ C:/Program Files/MinGW/include/objfwd.h
+ C:/Program Files/MinGW/include/wtypes.h
+ C:/Program Files/MinGW/include/rpcndr.h
+ C:/Program Files/MinGW/include/rpcnsip.h
+ C:/Program Files/MinGW/include/prsht.h
+ C:/Program Files/MinGW/include/winspool.h
+ C:/Program Files/MinGW/include/winsock.h
+ C:/Program Files/MinGW/include/winsock2.h
+ C:/Program Files/MinGW/include/sys/bsdtypes.h
+ C:/Program Files/MinGW/include/sys/time.h
+ C:/Program Files/MinGW/include/nspapi.h
+ C:/Program Files/MinGW/include/wtypes.h
+ C:/Program Files/MinGW/include/ole2.h
+ C:/Program Files/MinGW/include/objbase.h
+ C:/Program Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/stdlib.h
+ C:/Program Files/MinGW/include/objidl.h
+ C:/Program Files/MinGW/include/cguid.h
+ C:/Program Files/MinGW/include/olectlid.h
+ C:/Program Files/MinGW/include/oleauto.h
+ C:/Program Files/MinGW/include/oaidl.h
+ C:/Program Files/MinGW/include/oleidl.h
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glad/glad.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/KHR/khrplatform.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/GLFW/glfw3.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glm/mat4x4.hpp
@@ -405,6 +464,7 @@ CMakeFiles/main.dir/src/main.cpp.obj
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/dejavufont.h
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/player.h
 
 CMakeFiles/main.dir/src/stb_image.cpp.obj
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/src/stb_image.cpp

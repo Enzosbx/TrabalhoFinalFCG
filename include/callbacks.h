@@ -38,6 +38,20 @@ bool a_key_pressed = false;
 bool s_key_pressed = false;
 bool d_key_pressed = false;
 
+void correct_camera()
+{
+    float max_angle = 0.5;
+    if (g_CameraPhi >= max_angle)
+    {
+        g_CameraPhi = max_angle;
+    }
+
+    if (g_CameraPhi <= -max_angle)
+    {
+        g_CameraPhi = -max_angle;
+    }
+}
+
 // As entradas de todas as funções de callback widht, height, button e action são dadas pelo usuário
 // conforme ele faz as ações (se apertar o botao esquerdo do mouse, button = left e action = press)
 // quando aumenta ou diminui a tela , são passados os valores de width e height
@@ -80,7 +94,7 @@ void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
         glfwGetCursorPos(window, &g_LastCursorPosX, &g_LastCursorPosY);
         g_LeftMouseButtonPressed = true;
     }
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+    else
     {
         // Quando o usuário soltar o botão esquerdo do mouse, atualizamos a
         // variável abaixo para false.
@@ -122,6 +136,7 @@ void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 
 // Função callback chamada sempre que o usuário movimentar o cursor do mouse em
 // cima da janela OpenGL.
+int flick = 1;
 void CursorPosCallback(GLFWwindow *window, double xpos, double ypos)
 {
     // Abaixo executamos o seguinte: caso o botão esquerdo do mouse esteja
@@ -130,15 +145,29 @@ void CursorPosCallback(GLFWwindow *window, double xpos, double ypos)
     // parâmetros que definem a posição da câmera dentro da cena virtual.
     // Assim, temos que o usuário consegue controlar a câmera.
 
-    if (g_LeftMouseButtonPressed)
+    /*if (g_LeftMouseButtonPressed)*/
     {
-        // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
-        float dx = xpos - g_LastCursorPosX;
-        float dy = ypos - g_LastCursorPosY;
+        double xPos, yPos;
+        
+        glfwGetCursorPos(window, &xPos, &yPos);
 
+        // Definir a posição do cursor para o centro da janela
+        int screenWidth, screenHeight;
+        glfwGetWindowSize(window, &screenWidth, &screenHeight);
+        deltaX = xPos - (screenWidth / 2);
+        deltaY = (screenHeight / 2) - yPos;
+        // Calcular a diferença na posição do cursor
+g_LastCursorPosX = (screenWidth / 2);
+        g_LastCursorPosY = (screenHeight / 2);
+        // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
+        float dx = xpos - g_LastCursorPosX + deltaX /** camera_speed*/;
+        float dy = ypos - g_LastCursorPosY - deltaY /** camera_speed*/;
+        
+        glfwSetCursorPos(window, screenWidth / 2, screenHeight / 2);
         // Atualizamos parâmetros da câmera com os deslocamentos
         g_CameraTheta -= 0.01f * dx;
         g_CameraPhi += 0.01f * dy;
+        correct_camera();
 
         // Em coordenadas esféricas, o ângulo phi deve ficar entre -pi/2 e +pi/2.
         float phimax = 3.141592f / 2;
@@ -183,7 +212,7 @@ void CursorPosCallback(GLFWwindow *window, double xpos, double ypos)
 
 float norm2D()
 {
-    return 1/(cos(asin(w_vector.y)));
+    return 1 / (cos(asin(w_vector.y)));
 }
 
 // Função callback chamada sempre que o usuário movimenta a "rodinha" do mouse.
@@ -276,7 +305,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
     if ((key == GLFW_KEY_W && action == (GLFW_PRESS || GLFW_REPEAT)) || w_key_pressed == true)
     {
         w_key_pressed = true;
-        //camera_movement += -w_vector * camera_speed;
+        // camera_movement += -w_vector * camera_speed;
     }
 
     if (key == GLFW_KEY_W && action == GLFW_RELEASE)
@@ -288,7 +317,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
     if (key == GLFW_KEY_A && action == (GLFW_PRESS || GLFW_REPEAT) || a_key_pressed == true)
     {
         a_key_pressed = true;
-        //camera_movement += -u_vector * camera_speed;
+        // camera_movement += -u_vector * camera_speed;
     }
 
     if (key == GLFW_KEY_A && action == GLFW_RELEASE)
@@ -299,7 +328,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
 
     if (key == GLFW_KEY_S && action == (GLFW_PRESS || GLFW_REPEAT) || s_key_pressed == true)
     {
-        //camera_movement += w_vector * camera_speed;
+        // camera_movement += w_vector * camera_speed;
         s_key_pressed = true;
     }
 
@@ -311,7 +340,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
 
     if (key == GLFW_KEY_D && action == (GLFW_PRESS || GLFW_REPEAT) || d_key_pressed == true)
     {
-        //camera_movement += u_vector * camera_speed;
+        // camera_movement += u_vector * camera_speed;
         d_key_pressed = true;
     }
 

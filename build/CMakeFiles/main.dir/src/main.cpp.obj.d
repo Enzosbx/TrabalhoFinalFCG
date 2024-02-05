@@ -141,7 +141,24 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\stl_tempbuf.h \
  c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\uniform_int_dist.h \
  c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\iostream \
- C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glad/glad.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\thread \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\chrono \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\ratio \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\ctime \
+ c:\progra~1\mingw\include\time.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\parse_numbers.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\memory \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\stl_raw_storage_iter.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\ext\concurrence.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\unique_ptr.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\shared_ptr.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\shared_ptr_base.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\allocated_ptr.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\refwrap.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\shared_ptr_atomic.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\atomic_base.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\bits\atomic_lockfree_defines.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\backward\auto_ptr.h \
  c:\progra~1\mingw\include\windows.h c:\progra~1\mingw\include\windef.h \
  c:\progra~1\mingw\include\winnt.h c:\progra~1\mingw\include\winerror.h \
  c:\progra~1\mingw\include\string.h c:\progra~1\mingw\include\basetsd.h \
@@ -151,7 +168,31 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  c:\progra~1\mingw\include\dbt.h c:\progra~1\mingw\include\winnls.h \
  c:\progra~1\mingw\include\winver.h c:\progra~1\mingw\include\winnetwk.h \
  c:\progra~1\mingw\include\winreg.h c:\progra~1\mingw\include\reason.h \
- c:\progra~1\mingw\include\winsvc.h \
+ c:\progra~1\mingw\include\winsvc.h c:\progra~1\mingw\include\cderr.h \
+ c:\progra~1\mingw\include\dde.h c:\progra~1\mingw\include\ddeml.h \
+ c:\progra~1\mingw\include\dlgs.h c:\progra~1\mingw\include\imm.h \
+ c:\progra~1\mingw\include\lzexpand.h \
+ c:\progra~1\mingw\include\mmsystem.h c:\progra~1\mingw\include\nb30.h \
+ c:\progra~1\mingw\include\rpc.h c:\progra~1\mingw\include\windows.h \
+ c:\progra~1\mingw\include\rpcdce.h c:\progra~1\mingw\include\basetyps.h \
+ c:\progra~1\mingw\include\rpcdcep.h c:\progra~1\mingw\include\rpcnsi.h \
+ c:\progra~1\mingw\include\rpcnterr.h \
+ c:\progra~1\mingw\include\shellapi.h \
+ c:\progra~1\mingw\include\pshpack2.h c:\progra~1\mingw\include\winperf.h \
+ c:\progra~1\mingw\include\commdlg.h c:\progra~1\mingw\include\unknwn.h \
+ c:\progra~1\mingw\include\objfwd.h c:\progra~1\mingw\include\wtypes.h \
+ c:\progra~1\mingw\include\rpcndr.h c:\progra~1\mingw\include\rpcnsip.h \
+ c:\progra~1\mingw\include\prsht.h c:\progra~1\mingw\include\winspool.h \
+ c:\progra~1\mingw\include\winsock.h c:\progra~1\mingw\include\winsock2.h \
+ c:\progra~1\mingw\include\sys\bsdtypes.h \
+ c:\progra~1\mingw\include\sys\time.h c:\progra~1\mingw\include\nspapi.h \
+ c:\progra~1\mingw\include\wtypes.h c:\progra~1\mingw\include\ole2.h \
+ c:\progra~1\mingw\include\objbase.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\stdlib.h \
+ c:\progra~1\mingw\include\objidl.h c:\progra~1\mingw\include\cguid.h \
+ c:\progra~1\mingw\include\olectlid.h c:\progra~1\mingw\include\oleauto.h \
+ c:\progra~1\mingw\include\oaidl.h c:\progra~1\mingw\include\oleidl.h \
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glad/glad.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/KHR/khrplatform.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/GLFW/glfw3.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/glm/mat4x4.hpp \
@@ -345,4 +386,5 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/text.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/dejavufont.h \
- C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h \
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/player.h
