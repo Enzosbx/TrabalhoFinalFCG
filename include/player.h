@@ -11,18 +11,20 @@
 #include <glm/vec4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <time.h>
+#include <math.h>
+#include "callbacks.h"
 
-// #include "enemy.h"
+
 #define DimLab 19
-#define lado_bloco 50
-#define altura_bloco 35
+#define lado_bloco 45
+#define altura_bloco 100
 
 
-
-
+int Running = 500;
 float radius_player = 8;
 float pi = 3.14159265;
 int canShoot = 1;
+int picked_gun = 0;
 typedef enum
 {
     chao,
@@ -89,13 +91,17 @@ typedef struct
 Enemy enemy[NumEnemies];
 Enemy CreateEnemy(int x1, int y1, tipoEnemy tipo);
 
+float DistanceDots(glm::vec4 P1, glm::vec4 P2)
+{
+    return sqrt(pow(P1.x-P2.x,2) + pow(P1.y-P2.y,2) + pow(P1.z-P2.z,2));
+}
+
 Bullet newBullet()
 {
     Bullet bullet;
     bullet.vivo = 1;
     bullet.pos = camera_position_c;
     bullet.dir = camera_view_vector;
-    bullet.pos.y -= 2;
     bullet.veloc = 0.4f;
     return bullet;
 }
@@ -133,29 +139,50 @@ void cam_colisoes()
     }
 }
 
-void walk()
+void walk(float *distance)
 {
+    int walking = 0, run = 0;
+    if (left_shift_key_pressed == true && Running > 0) 
+    {
+        camera_speed = 0.4f;
+        Running--;
+        if(Running<0) Running = 0;
+        run = 1;
+    }
+    else if (left_shift_key_pressed == false)
+    {
+        camera_speed = 0.2f;
+        Running++;
+        if(Running>500) Running = 500;
+    }
 
     if (w_key_pressed == true)
     {
         camera_movement += glm::vec4{-w_vector.x * norm2D(), 0.0f, -w_vector.z * norm2D(), w_vector.w} * camera_speed;
-        // camera_movement += -w_vector * camera_speed;
+        walking = 1;
     }
     if (a_key_pressed == true)
     {
         camera_movement += -u_vector * camera_speed;
-        // camera_movement += -u_vector * camera_speed;
+        walking = 1;
     }
     if (s_key_pressed == true)
     {
         camera_movement += glm::vec4{w_vector.x * norm2D(), 0.0f, w_vector.z * norm2D(), w_vector.w} * camera_speed;
-        // camera_movement += w_vector * camera_speed;
+        walking = 1;
     }
     if (d_key_pressed == true)
     {
         camera_movement += u_vector * camera_speed;
-        // camera_movement += u_vector * camera_speed;
-    }
+        walking = 1;
+    }  
+    if(walking == 1)
+{
+*distance += 0.1f;
+if(run == 1)*distance += 0.05f;
+
+}
+    
     cam_colisoes();
 }
 

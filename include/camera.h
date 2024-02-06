@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 #include "matrices.h"
 
-
+float distance = 0;
 // Informações iniciais da camera
 
 float g_ScreenRatio = 1.0f; 
@@ -64,11 +64,13 @@ glm::mat4 defineViewFCam(glm::mat4 view) {
     glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
     
-    camera_speed = 0.2/0.4f; // Velocidade da câmera
+    camera_speed = 10.0f;
     prev_time = (float)glfwGetTime();
     camera_position_c  = glm::vec4{x,y,z,1.0f} + camera_movement;
     camera_view_vector = {-x,-y,-z,0.0f};
-    view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+    glm::vec4 camwalk = camera_position_c;
+    camwalk.y += 2*sin(distance/5)*sin(distance/5);
+    view = Matrix_Camera_View(camwalk, camera_view_vector, camera_up_vector);
 
           // Vetores utilizados para a movimentação da câmera!
 

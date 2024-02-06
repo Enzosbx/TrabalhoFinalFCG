@@ -387,4 +387,5 @@ CMakeFiles/main.dir/src/main.cpp.obj: \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/utils.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/dejavufont.h \
  C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/callbacks.h \
- C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/player.h
+ C:/Users/Enzo/Documentos/5_SEMESTRE/FCG/TrabFinalFCG2023/include/player.h \
+ c:\progra~1\mingw\lib\gcc\mingw32\9.2.0\include\c++\math.h

@@ -18,11 +18,10 @@ in vec2 textcoords;
 
 // Identificador que define qual objeto está sendo desenhado no momento
 
-#define DOOR 0
-#define STONE_EYES  1
-#define STONE_HANDS_LEGS  2
-#define STONE_HEAD  3
-#define STONE_TORSO  4
+#define GOLEM_EYES 1
+#define GOLEM_HANDS_LEGS 2
+#define GOLEM_HEAD 3
+#define GOLEM_TORSO 4
 #define REAPER 5
 #define SCORPION 6
 #define WALL_CUBE 7
@@ -32,7 +31,7 @@ in vec2 textcoords;
 #define BULLETC 11
 #define FAKE_CUBE 12
 #define GUN 13
-
+#define DIAMOND 14
 
 uniform int object_id;
 
@@ -49,6 +48,9 @@ uniform sampler2D TextureImage3;
 uniform sampler2D TextureImage4;
 uniform sampler2D TextureImage5;
 uniform sampler2D TextureImage6;
+uniform sampler2D TextureImage7;
+uniform sampler2D TextureImage8;
+uniform sampler2D TextureImage9;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
@@ -124,37 +126,37 @@ void main()
     float U = 0; 
     float V = 0;
 
-    if ( object_id == STONE_EYES )          
+    if ( object_id == GOLEM_EYES )          
     {
-                                    // Olhos serão especulares 
+                                    
         Kd = vec3(1.0,0.0,0.0);
         Ks = vec3(0.0,0.0,0.0);
         Ka = vec3(0.5,0.0,0.0);
         q = 1.0;
     }
-    else if ( object_id == STONE_HANDS_LEGS )   // ch
+    else if ( object_id == GOLEM_HANDS_LEGS )   // ch
     {
-        Kd = vec3(0.8,0.4,0.08);  // Superfície 100% difusa, com refletância no modelo RGB = (0.8, 0.4, 0.08)
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.4,0.2,0.04);
-        q = 1.0;
+        U = define_U_coeff(0);
+        V = define_V_coeff(0);
     }
-    else if ( object_id == STONE_HEAD )   // ch
+    else if ( object_id == GOLEM_HEAD )   // ch
     {
-        Kd = vec3(0.8,0.4,0.08); 
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.4,0.2,0.04);
-        q = 1.0;
+        U = define_U_coeff(0);
+        V = define_V_coeff(0);
     }
-    else if ( object_id == STONE_TORSO )   // ch
+    else if ( object_id == GOLEM_TORSO )   // ch
     {
-        Kd = vec3(0.0,0.0,0.0); 
-        Ks = vec3(1.0,1.0,1.0);
-        Ka = vec3(0.0,0.0,0.0);
-        q = 1.0;
+        U = define_U_coeff(0);
+        V = define_V_coeff(0);
     }
     
     else if ( object_id == SCORPION )   
+    {
+        U = define_U_coeff(0);
+        V = define_V_coeff(0); 
+    }
+
+    else if ( object_id == DIAMOND )   
     {
         U = define_U_coeff(0);
         V = define_V_coeff(0); 
@@ -264,19 +266,12 @@ void main()
 
         color = cor_v;
     }
-
-    else if (object_id == REAPER) {
-                          
-       vec3 Kd = texture(TextureImage2, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
-    }
-    
     else if (object_id == SCORPION) {
   
        vec3 Kd = texture(TextureImage3, vec2(U,V)).rgb;
        color.rgb = Kd * (lambert + 0.01);
     }
-
+    
     else if (object_id == GUN) {
 
        vec3 Kd = texture(TextureImage4, vec2(U,V)).rgb;
@@ -294,6 +289,24 @@ void main()
        vec3 Kd = texture(TextureImage6, vec2(U,V)).rgb;
        color.rgb = Kd * I * lambert + ambient_term + blinn_phong_specular_term;
 
+    }
+
+    else if (object_id == GOLEM_TORSO) {
+  
+       vec3 Kd = texture(TextureImage7, vec2(U,V)).rgb;
+       color.rgb = Kd * (lambert + 0.01);
+    }
+
+    else if (object_id == GOLEM_HEAD || object_id == GOLEM_HANDS_LEGS) {
+  
+       vec3 Kd = texture(TextureImage8, vec2(U,V)).rgb;
+       color.rgb = Kd * (lambert + 0.01);
+    }
+
+    else if (object_id == DIAMOND) {
+  
+       vec3 Kd = texture(TextureImage9, vec2(U,V)).rgb;
+       color.rgb = Kd * (lambert + 0.01);
     }
 
     else {

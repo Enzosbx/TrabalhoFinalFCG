@@ -37,6 +37,7 @@ bool w_key_pressed = false;
 bool a_key_pressed = false;
 bool s_key_pressed = false;
 bool d_key_pressed = false;
+bool left_shift_key_pressed = false;
 
 void correct_camera()
 {
@@ -148,7 +149,7 @@ void CursorPosCallback(GLFWwindow *window, double xpos, double ypos)
     /*if (g_LeftMouseButtonPressed)*/
     {
         double xPos, yPos;
-        
+
         glfwGetCursorPos(window, &xPos, &yPos);
 
         // Definir a posição do cursor para o centro da janela
@@ -157,12 +158,12 @@ void CursorPosCallback(GLFWwindow *window, double xpos, double ypos)
         deltaX = xPos - (screenWidth / 2);
         deltaY = (screenHeight / 2) - yPos;
         // Calcular a diferença na posição do cursor
-g_LastCursorPosX = (screenWidth / 2);
+        g_LastCursorPosX = (screenWidth / 2);
         g_LastCursorPosY = (screenHeight / 2);
         // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
         float dx = xpos - g_LastCursorPosX + deltaX /** camera_speed*/;
         float dy = ypos - g_LastCursorPosY - deltaY /** camera_speed*/;
-        
+
         glfwSetCursorPos(window, screenWidth / 2, screenHeight / 2);
         // Atualizamos parâmetros da câmera com os deslocamentos
         g_CameraTheta -= 0.01f * dx;
@@ -273,11 +274,13 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
     }
 
     // Se o usuário apertar a tecla espaço, resetamos os ângulos de Euler para zero.
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
     {
-        g_AngleX = 0.0f;
-        g_AngleY = 0.0f;
-        g_AngleZ = 0.0f;
+        left_shift_key_pressed = true;
+    }
+    else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE)
+    {
+        left_shift_key_pressed = false;
     }
 
     // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.

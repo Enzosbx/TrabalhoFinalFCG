@@ -462,7 +462,8 @@ CMakeFiles/main.dir/src/main.cpp.obj: ../src/main.cpp \
   ../include/utils.h \
   ../include/dejavufont.h \
   ../include/callbacks.h \
-  ../include/player.h
+  ../include/player.h \
+  C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/math.h
 
 CMakeFiles/main.dir/src/stb_image.cpp.obj: ../src/stb_image.cpp \
   ../include/stb_image.h \
@@ -711,9 +712,9 @@ C:/Program\ Files/MinGW/include/shellapi.h:
 
 C:/Program\ Files/MinGW/include/errno.h:
 
-C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/math.h:
-
 C:/Program\ Files/MinGW/include/limits.h:
+
+C:/Program\ Files/MinGW/lib/gcc/mingw32/9.2.0/include/c++/math.h:
 
 ../include/glm/ext/vector_float1.hpp:
 

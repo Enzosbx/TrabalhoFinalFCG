@@ -43,10 +43,12 @@
 #include "text.h"
 #include "player.h"
 
-#define STONE_EYES 1 // Definição de todos as figuras existentes nos objs.
-#define STONE_HANDS_LEGS 2
-#define STONE_HEAD 3
-#define STONE_TORSO 4
+// Definição de todos as figuras existentes nos objs.
+
+#define GOLEM_EYES 1
+#define GOLEM_HANDS_LEGS 2
+#define GOLEM_HEAD 3
+#define GOLEM_TORSO 4
 #define REAPER 5
 #define SCORPION 6
 #define WALL_CUBE 7
@@ -56,6 +58,7 @@
 #define BULLETC 11
 #define FAKE_CUBE 12
 #define GUN 13
+#define DIAMOND 14
 
 GLFWwindow *window;
 
@@ -123,7 +126,6 @@ void BuildTrianglesAndAddToVirtualScene(ObjModel *);                            
 void ComputeNormals(ObjModel *model);                                                 // Computa normais de um ObjModel, caso não existam.
 void LoadTextureImage(const char *filename);                                          // Função que carrega imagens de textura
 void DrawVirtualObject(const char *object_name);                                      // Desenha um objeto armazenado em g_VirtualScene
-void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def); // Desenha diferentes instancias de um mesmo objeto, alterando apenas os parametros da matriz model
 void PrintObjModelInfo(ObjModel *);                                                   // Função para debugging
 
 // Funções e definições relativas ao mapa
@@ -266,6 +268,9 @@ int main(int argc, char *argv[])
     LoadTextureImage("../../data/textura-dourada.jpg"); // TextureImage4
     LoadTextureImage("../../data/textura-bala.jpg");    // TextureImage5
     LoadTextureImage("../../data/fake-wood-texture.jpg");  // TextureImage6
+    LoadTextureImage("../../data/textura-golem.jpg");  // TextureImage7
+    LoadTextureImage("../../data/outra-textura-golem.jpg");  // TextureImage8
+    LoadTextureImage("../../data/textura-diamante.jpg");  // TextureImage9
 
 
     /*for (int i = 0; i < NumEnemies; i++)
@@ -310,6 +315,11 @@ int main(int argc, char *argv[])
     ObjModel gun_model("../../data/Gun.obj");
     ComputeNormals(&gun_model);
     BuildTrianglesAndAddToVirtualScene(&gun_model);
+
+    ObjModel diamond_model("../../data/diamond.obj");
+    ComputeNormals(&diamond_model);
+    BuildTrianglesAndAddToVirtualScene(&diamond_model);
+
 
     if (argc > 1)
     {
@@ -358,7 +368,7 @@ int main(int argc, char *argv[])
         // Pedimos para a GPU utilizar o programa de GPU criado acima (contendo
         // os shaders de vértice e fragmentos).
         glUseProgram(g_GpuProgramID);
-        walk();
+        walk(&distance);
 
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
         // definir o sistema de coordenadas da câmera.
@@ -387,7 +397,7 @@ int main(int argc, char *argv[])
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo!
         float nearplane = -1.0f;  // Posição do "near plane"
-        float farplane = -400.0f; // Posição do "far plane"
+        float farplane = -250.0f; // Posição do "far plane"
 
         projection = defineProjection(projection, nearplane, farplane);
 
@@ -402,25 +412,6 @@ int main(int argc, char *argv[])
 
         drawMap(model);
 
-        /*
-        DrawGolemInstance(0.0f, 0.0f, -5.0f, "eyes_Esfera.007", 1);
-        DrawGolemInstance(0.0f, 0.0f, -5.0f, "hands&leg.001_ice.003", 2);
-        DrawGolemInstance(0.0f, 0.0f, -5.0f, "head.001_ice.004", 3);
-        DrawGolemInstance(0.0f, 0.0f, -5.0f, "torso.001_ice.005", 4);
-        DrawGolemInstance(0.0f, 0.0f, 5.0f, "eyes_Esfera.007", 1);
-        DrawGolemInstance(0.0f, 0.0f, 5.0f, "hands&leg.001_ice.003", 2);
-        DrawGolemInstance(0.0f, 0.0f, 5.0f, "head.001_ice.004", 3);
-        DrawGolemInstance(0.0f, 0.0f, 5.0f, "torso.001_ice.005", 4);
-        DrawGolemInstance(5.0f, 0.0f, 0.0f, "eyes_Esfera.007", 1);
-        DrawGolemInstance(5.0f, 0.0f, 0.0f, "hands&leg.001_ice.003", 2);
-        DrawGolemInstance(5.0f, 0.0f, 0.0f, "head.001_ice.004", 3);
-        DrawGolemInstance(5.0f, 0.0f, 0.0f, "torso.001_ice.005", 4);
-        DrawGolemInstance(-5.0f, 0.0f, 0.0f, "eyes_Esfera.007", 1);
-        DrawGolemInstance(-5.0f, 0.0f, 0.0f, "hands&leg.001_ice.003", 2);
-        DrawGolemInstance(-5.0f, 0.0f, 0.0f, "head.001_ice.004", 3);
-        DrawGolemInstance(-5.0f, 0.0f, 0.0f, "torso.001_ice.005", 4);
-        */
-
         if (bullet.vivo)
         {
             bullet.time -= 1;
@@ -428,17 +419,17 @@ int main(int argc, char *argv[])
             {
                 bullet.pos += bullet.veloc * bullet.dir;
                 // MOSTRAR TIRO
-                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi)  * Matrix_Translate(-2,-1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
                 glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                 glUniform1i(g_object_id_uniform, BULLETA);
                 DrawVirtualObject("the_bulleta");
 
-                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi)  * Matrix_Translate(-2,-1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
                 glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                 glUniform1i(g_object_id_uniform, BULLETB);
                 DrawVirtualObject("the_bulletb");
 
-                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi)  * Matrix_Translate(-2,-1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
                 glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                 glUniform1i(g_object_id_uniform, BULLETC);
                 DrawVirtualObject("the_bulletc");
@@ -468,7 +459,22 @@ int main(int argc, char *argv[])
                     DrawVirtualObject("the_scorpion");
                     break;
                 case Golem:
-
+                     model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Scale(3.0, 3.0f, 3.0f);
+                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                     glUniform1i(g_object_id_uniform, GOLEM_EYES);
+                     DrawVirtualObject("eyes_Esfera.007");
+                     model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                     glUniform1i(g_object_id_uniform, GOLEM_HEAD);
+                     DrawVirtualObject("head.001_ice.004");
+                    model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                     glUniform1i(g_object_id_uniform, GOLEM_HANDS_LEGS);
+                     DrawVirtualObject("hands&leg.001_ice.003");
+                    model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                     glUniform1i(g_object_id_uniform, GOLEM_TORSO);
+                     DrawVirtualObject("torso.001_ice.005");
                     break;
                 case Reaper:
                     model = Matrix_Translate(enemy[i].pos.x, -18.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i]) + pi) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(3.0f, 3.0f, 3.0f);
@@ -479,7 +485,7 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        // Desenhamos o modelo da cerca, com animação
+        // Desenhamos o modelo da arma, com animação
 
         float time_now = glfwGetTime();
         float delta_t = time_now - prev_time_d;
@@ -487,10 +493,31 @@ int main(int argc, char *argv[])
 
         // DESENHAMOS O MODELO DA ARMA
 
-        model = Matrix_Translate(0.0f, 0.0f, 50.0f) * Matrix_Scale(8.0f, 8.0f, 8.0f) * Matrix_Rotate_Y(g_AngleY + delta_t);
+        glm::vec4 pos_gun = {0.0f, 0.0f, 50.0f, 1.0f};
+         if (picked_gun == 0)
+        {
+          model = Matrix_Translate(pos_gun.x, pos_gun.y, pos_gun.z) * Matrix_Rotate_Y(g_AngleY + delta_t) * Matrix_Scale(8.0f, 8.0f, 8.0f);
+          glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+          glUniform1i(g_object_id_uniform, GUN);
+          DrawVirtualObject("the_gun");
+          if(DistanceDots(pos_gun, camera_position_c)<=20) picked_gun = 1;
+        }
+
+         else
+        {
+            model =  Matrix_Translate(camera_position_c.x, camera_position_c.y-2, camera_position_c.z)* Matrix_Rotate_Y(g_CameraTheta-pi/2) * Matrix_Translate(-2,-0.5, -2)* Matrix_Rotate_Z(g_CameraPhi) *  Matrix_Scale(8.0f, 8.0f, 8.0f);
+            glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(g_object_id_uniform,  GUN);
+            DrawVirtualObject("the_gun");
+        }
+
+               
+        // DESENHAMOS O MODELO DO DIAMANTE
+
+        model = Matrix_Translate(0.0f, -15.5f, 20.0f) * Matrix_Scale(5.0f, 5.0f, 5.0f);
         glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, GUN);
-        DrawVirtualObject("the_gun");
+        glUniform1i(g_object_id_uniform, DIAMOND);
+        DrawVirtualObject("the_diamond");
        
 
         // O framebuffer onde OpenGL executa as operações de renderização não
@@ -760,7 +787,7 @@ void drawMap(glm::mat4 model)
                 {
                     // MODELO DO CUBO FALSO
 
-                    model = Matrix_Translate(lado_bloco * (i - 1), altura_bloco - 17.5, lado_bloco * (j - 1)) * Matrix_Scale(lado_bloco, altura_bloco, lado_bloco);
+                    model = Matrix_Translate(lado_bloco * (i - 1), altura_bloco - 19.5, lado_bloco * (j - 1)) * Matrix_Scale(lado_bloco, altura_bloco, lado_bloco);
                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                     glUniform1i(g_object_id_uniform, FAKE_CUBE);
                     DrawVirtualObject("the_cube");
@@ -768,7 +795,7 @@ void drawMap(glm::mat4 model)
                 }
                 else
                 {
-                    model = Matrix_Translate(lado_bloco * (i - 1), altura_bloco - 17.5, lado_bloco * (j - 1)) * Matrix_Scale(lado_bloco, altura_bloco, lado_bloco);
+                    model = Matrix_Translate(lado_bloco * (i - 1), altura_bloco - 19.5, lado_bloco * (j - 1)) * Matrix_Scale(lado_bloco, altura_bloco, lado_bloco);
                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                     glUniform1i(g_object_id_uniform, WALL_CUBE);
                     DrawVirtualObject("the_cube");
@@ -1040,11 +1067,4 @@ void PrintObjModelInfo(ObjModel *model)
     }
 }
 
-void DrawGolemInstance(float x, float y, float z, const char *obj_name, int obj_def)
-{
-    glm::mat4 model = Matrix_Translate(x, y, z) * Matrix_Scale(0.6f, 0.6f, 1.0f) * Matrix_Rotate_Z(g_AngleZ) * Matrix_Rotate_Y(g_AngleY) * Matrix_Rotate_X(g_AngleX);
-    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform1i(g_object_id_uniform, obj_def);
-    DrawVirtualObject(obj_name);
-    return;
-}
+
