@@ -122,11 +122,11 @@ struct ObjModel
 
 // Outras funções, que estão implementadas após a main.
 
-void BuildTrianglesAndAddToVirtualScene(ObjModel *);                                  // Constrói representação de um ObjModel como malha de triângulos para renderização
-void ComputeNormals(ObjModel *model);                                                 // Computa normais de um ObjModel, caso não existam.
-void LoadTextureImage(const char *filename);                                          // Função que carrega imagens de textura
-void DrawVirtualObject(const char *object_name);                                      // Desenha um objeto armazenado em g_VirtualScene
-void PrintObjModelInfo(ObjModel *);                                                   // Função para debugging
+void BuildTrianglesAndAddToVirtualScene(ObjModel *); // Constrói representação de um ObjModel como malha de triângulos para renderização
+void ComputeNormals(ObjModel *model);                // Computa normais de um ObjModel, caso não existam.
+void LoadTextureImage(const char *filename);         // Função que carrega imagens de textura
+void DrawVirtualObject(const char *object_name);     // Desenha um objeto armazenado em g_VirtualScene
+void PrintObjModelInfo(ObjModel *);                  // Função para debugging
 
 // Funções e definições relativas ao mapa
 
@@ -146,12 +146,42 @@ struct SceneObject
     glm::vec3 bbox_max;
 };
 
+double deltaTime()
+{
+    static double lastFrameTime = 0.0;
+    double currentFrameTime = glfwGetTime();
+    double deltaTime = currentFrameTime - lastFrameTime;
+    lastFrameTime = currentFrameTime;
+    return deltaTime;
+}
+
+void HitBulletEnemy(Bullet *bullet, Enemy *enemy)
+{
+    glm::vec4 Inim = {enemy->pos.x, enemy->height_center, enemy->pos.y, 1.0f};
+    if (DistanceDots(bullet->pos, Inim) <= enemy->raio && enemy->vivo == 1)
+    {
+        bullet->vivo = 0;
+
+        enemy->vida--;
+        enemy->veloc *= 1.05;
+        enemy->scale *= 1.05;
+        enemy->raio *= 1.05;
+        if (enemy->vida <= 0)
+        {
+            enemy->vivo = 0;
+            if (enemy->holdin != NumDiam)
+            {
+                diamonds[enemy->holdin].state = Floor;
+                enemy->holdin = NumDiam;
+            }
+        }
+    }
+}
+
 int HitBullet(Bullet *bullet)
 {
     if (Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].type == parede)
     {
-        printf("%d %d, %d\n", (int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco, (int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco, Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].breakable);
-
         if (Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].breakable == 1)
         {
             Labirinto[(int)(bullet->pos.x + 1.5 * lado_bloco) / lado_bloco][(int)(bullet->pos.z + 1.5 * lado_bloco) / lado_bloco].type = chao;
@@ -174,7 +204,6 @@ GLuint g_NumLoadedTextures = 0;
 
 glm::mat4 model = Matrix_Identity();
 Bullet bullet;
-
 int main(int argc, char *argv[])
 {
     // Inicializamos a biblioteca GLFW, utilizada para criar uma janela do
@@ -185,8 +214,8 @@ int main(int argc, char *argv[])
     RECT desktopRect;
     GetWindowRect(hDesktop, &desktopRect);
 
-    int screenWidth = desktopRect.right;
-    int screenHeight = desktopRect.bottom;
+    int screenWidth = 1980;  // desktopRect.right;
+    int screenHeight = 1080; // desktopRect.bottom;
 
     readMap(arquivo); // Leitura do arquivo contendo o mapa
 
@@ -261,22 +290,16 @@ int main(int argc, char *argv[])
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     // Carregamento das imagens de textura que serão utilizadas.
 
-    LoadTextureImage("../../data/wood-texture.jpg");    // TextureImage0
-    LoadTextureImage("../../data/textura-pedra.jpeg");  // TextureImage1
-    LoadTextureImage("../../data/textura-caveira.jpg"); // TextureImage2
-    LoadTextureImage("../../data/textura-carne.jpg");   // TextureImage3
-    LoadTextureImage("../../data/textura-dourada.jpg"); // TextureImage4
-    LoadTextureImage("../../data/textura-bala.jpg");    // TextureImage5
-    LoadTextureImage("../../data/fake-wood-texture.jpg");  // TextureImage6
-    LoadTextureImage("../../data/textura-golem.jpg");  // TextureImage7
-    LoadTextureImage("../../data/outra-textura-golem.jpg");  // TextureImage8
-    LoadTextureImage("../../data/textura-diamante.jpg");  // TextureImage9
-
-
-    /*for (int i = 0; i < NumEnemies; i++)
-    {
-        enemy[i] = CreateEnemy(3 + 2 * i, 3 + 2 * i);
-    }*/
+    LoadTextureImage("../../data/wood-texture3.jpg");        // TextureImage0
+    LoadTextureImage("../../data/textura-pedra3.jpg");       // TextureImage1
+    LoadTextureImage("../../data/textura-caveira.jpg");      // TextureImage2
+    LoadTextureImage("../../data/textura-carne2.jpg");       // TextureImage3
+    LoadTextureImage("../../data/textura-dourada3.jpg");     // TextureImage4
+    LoadTextureImage("../../data/textura-bala2.jpg");        // TextureImage5
+    LoadTextureImage("../../data/fake-wood-texture3.jpg");   // TextureImage6
+    LoadTextureImage("../../data/textura-golem3.jpg");       // TextureImage7
+    LoadTextureImage("../../data/outra-textura-golem2.jpg"); // TextureImage8
+    LoadTextureImage("../../data/textura-diamante3.jpg");    // TextureImage9
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 
@@ -320,7 +343,6 @@ int main(int argc, char *argv[])
     ComputeNormals(&diamond_model);
     BuildTrianglesAndAddToVirtualScene(&diamond_model);
 
-
     if (argc > 1)
     {
         ObjModel model(argv[1]);
@@ -346,6 +368,18 @@ int main(int argc, char *argv[])
     // Ficamos em um loop infinito, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
     {
+        double dt = deltaTime();
+
+        // Lógica de atualização e renderização do jogo aqui
+
+        // Limita o FPS
+        double targetFrameTime = 1.0 / 120.0; // 60 FPS
+        if (dt < targetFrameTime)
+        {
+            double sleepTime = targetFrameTime - dt;
+            glfwWaitEventsTimeout(sleepTime);
+        }
+
         // Aqui executamos as operações de renderização
 
         // Definimos a cor do "fundo" do framebuffer como branco.  Tal cor é
@@ -369,9 +403,15 @@ int main(int argc, char *argv[])
         // os shaders de vértice e fragmentos).
         glUseProgram(g_GpuProgramID);
         walk(&distance);
-        
-        // Computamos a matriz "View" utilizando os parâmetros da câmera para
-        // definir o sistema de coordenadas da câmera......
+        if (hurt)
+            recover_time--;
+        for (int i = 0; i < NumEnemies; i++)
+        {
+            player_enemy_collision(&enemy[i]);
+        }
+        // printf("%d %d %d\n", life, hurt, recover_time);
+        //  Computamos a matriz "View" utilizando os parâmetros da câmera para
+        //  definir o sistema de coordenadas da câmera......
         glm::mat4 view;
 
         if (g_UseLookAtCamera)
@@ -382,8 +422,7 @@ int main(int argc, char *argv[])
         { // Free Camera
             view = defineViewFCam(view);
         }
-
-        if (g_LeftMouseButtonPressed && canShoot)
+        if (g_LeftMouseButtonPressed && canShoot && picked_gun)
         { // tiro
             bullet = newBullet();
             canShoot = 0;
@@ -411,39 +450,40 @@ int main(int argc, char *argv[])
         // Desenhamos o mapa, com seus cubos
 
         drawMap(model);
-
         if (bullet.vivo)
         {
-            bullet.time -= 1;
             if (bullet.time >= 0)
             {
+                bullet.time -= 1;
                 bullet.pos += bullet.veloc * bullet.dir;
-                // MOSTRAR TIRO
-                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi)  * Matrix_Translate(-2,-1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
+                //  MOSTRAR TIRO
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Translate(-2, -1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
                 glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                 glUniform1i(g_object_id_uniform, BULLETA);
                 DrawVirtualObject("the_bulleta");
 
-                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi)  * Matrix_Translate(-2,-1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Translate(-2, -1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
                 glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                 glUniform1i(g_object_id_uniform, BULLETB);
                 DrawVirtualObject("the_bulletb");
 
-                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi)  * Matrix_Translate(-2,-1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
+                model = Matrix_Translate(bullet.pos.x, bullet.pos.y, bullet.pos.z) * Matrix_Rotate_Y(g_CameraTheta + pi) * Matrix_Translate(-2, -1.7, 2.5) * Matrix_Rotate_X(pi / 2 + g_CameraPhi) * Matrix_Scale(1.5f, 1.5f, 1.5f);
                 glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                 glUniform1i(g_object_id_uniform, BULLETC);
                 DrawVirtualObject("the_bulletc");
+
                 if (HitBullet(&bullet))
                     bullet.vivo = 0;
+
+                for (int i = 0; i < NumEnemies; i++)
+                {
+                    if (bullet.vivo == 1)
+                        HitBulletEnemy(&bullet, &enemy[i]);
+                }
             }
             else
                 bullet.vivo = 0;
         }
-
-        /*model = Matrix_Translate(100.0f, -17.5f, 180.0f) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(3.0f, 3.0f, 3.0f);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, REAPER);
-        DrawVirtualObject("the_reaper");*/
 
         for (int i = 0; i < NumEnemies; i++)
         {
@@ -453,31 +493,31 @@ int main(int argc, char *argv[])
                 {
                 case Scorpion:
 
-                    model = Matrix_Translate(enemy[i].pos.x, -12.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i])) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(5.0f, 5.0f, 5.0f);
+                    model = Matrix_Translate(enemy[i].pos.x, -12.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i])) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(enemy[i].scale, enemy[i].scale, enemy[i].scale);
                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                     glUniform1i(g_object_id_uniform, SCORPION);
                     DrawVirtualObject("the_scorpion");
                     break;
                 case Golem:
-                     model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Scale(3.0, 3.0f, 3.0f);
-                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-                     glUniform1i(g_object_id_uniform, GOLEM_EYES);
-                     DrawVirtualObject("eyes_Esfera.007");
-                     model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Scale(3.0f, 3.0f, 3.0f);
-                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-                     glUniform1i(g_object_id_uniform, GOLEM_HEAD);
-                     DrawVirtualObject("head.001_ice.004");
-                    model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Scale(3.0f, 3.0f, 3.0f);
-                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-                     glUniform1i(g_object_id_uniform, GOLEM_HANDS_LEGS);
-                     DrawVirtualObject("hands&leg.001_ice.003");
-                    model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Scale(3.0f, 3.0f, 3.0f);
-                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-                     glUniform1i(g_object_id_uniform, GOLEM_TORSO);
-                     DrawVirtualObject("torso.001_ice.005");
+                    model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i]) + pi) * Matrix_Scale(enemy[i].scale, enemy[i].scale, enemy[i].scale);
+                    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(g_object_id_uniform, GOLEM_EYES);
+                    DrawVirtualObject("eyes_Esfera.007");
+                    model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i]) + pi) * Matrix_Scale(enemy[i].scale, enemy[i].scale, enemy[i].scale);
+                    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(g_object_id_uniform, GOLEM_HEAD);
+                    DrawVirtualObject("head.001_ice.004");
+                    model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i]) + pi) * Matrix_Scale(enemy[i].scale, enemy[i].scale, enemy[i].scale);
+                    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(g_object_id_uniform, GOLEM_HANDS_LEGS);
+                    DrawVirtualObject("hands&leg.001_ice.003");
+                    model = Matrix_Translate(enemy[i].pos.x, -17.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i]) + pi) * Matrix_Scale(enemy[i].scale, enemy[i].scale, enemy[i].scale);
+                    glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                    glUniform1i(g_object_id_uniform, GOLEM_TORSO);
+                    DrawVirtualObject("torso.001_ice.005");
                     break;
                 case Reaper:
-                    model = Matrix_Translate(enemy[i].pos.x, -18.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i]) + pi) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(3.0f, 3.0f, 3.0f);
+                    model = Matrix_Translate(enemy[i].pos.x, -19.5f + enemy[i].floating * (1 + sin(enemy[i].percent * pi / 50)), enemy[i].pos.y) * Matrix_Rotate_Y(rotacaoEnemy(enemy[i]) + pi) * Matrix_Rotate_X(-1.5708f) * Matrix_Scale(enemy[i].scale, enemy[i].scale, enemy[i].scale);
                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                     glUniform1i(g_object_id_uniform, REAPER);
                     DrawVirtualObject("the_reaper");
@@ -494,31 +534,45 @@ int main(int argc, char *argv[])
         // DESENHAMOS O MODELO DA ARMA
 
         glm::vec4 pos_gun = {0.0f, 0.0f, 50.0f, 1.0f};
-         if (picked_gun == 0)
+        if (picked_gun == 0)
         {
-          model = Matrix_Translate(pos_gun.x, pos_gun.y, pos_gun.z) * Matrix_Rotate_Y(g_AngleY + delta_t) * Matrix_Scale(8.0f, 8.0f, 8.0f);
-          glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-          glUniform1i(g_object_id_uniform, GUN);
-          DrawVirtualObject("the_gun");
-          if(DistanceDots(pos_gun, camera_position_c)<=20) picked_gun = 1;
-        }
-
-         else
-        {
-            model =  Matrix_Translate(camera_position_c.x, camera_position_c.y-2, camera_position_c.z)* Matrix_Rotate_Y(g_CameraTheta-pi/2) * Matrix_Translate(-2,-0.5, -2)* Matrix_Rotate_Z(g_CameraPhi) *  Matrix_Scale(8.0f, 8.0f, 8.0f);
+            model = Matrix_Translate(pos_gun.x, pos_gun.y, pos_gun.z) * Matrix_Rotate_Y(g_AngleY + delta_t) * Matrix_Scale(8.0f, 8.0f, 8.0f);
             glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-            glUniform1i(g_object_id_uniform,  GUN);
+            glUniform1i(g_object_id_uniform, GUN);
+            DrawVirtualObject("the_gun");
+            if (DistanceDots(pos_gun, camera_position_c) <= 20)
+                picked_gun = 1;
+        }
+        else
+        {
+            model = Matrix_Translate(camera_position_c.x, camera_position_c.y - 2, camera_position_c.z) * Matrix_Rotate_Y(g_CameraTheta - pi / 2) * Matrix_Translate(-2, -0.5, -2) * Matrix_Rotate_Z(g_CameraPhi) * Matrix_Scale(8.0f, 8.0f, 8.0f);
+            glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(g_object_id_uniform, GUN);
             DrawVirtualObject("the_gun");
         }
 
-               
         // DESENHAMOS O MODELO DO DIAMANTE
 
-        model = Matrix_Translate(0.0f, -15.5f, 20.0f) * Matrix_Scale(5.0f, 5.0f, 5.0f);
-        glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, DIAMOND);
-        DrawVirtualObject("the_diamond");
-       
+        for (int i = 0; i < NumDiam; i++)
+        {
+            glm::vec4 diam_pos = {(diamonds[i].pos.x - 1) * lado_bloco, 0.0f, (diamonds[i].pos.y - 1) * lado_bloco, 1.0f};
+            if (DistanceDots(camera_position_c, diam_pos) <= diamonds[i].raio && diamonds[i].state == Floor)
+                diamonds[i].state = Holden;
+            if (diamonds[i].state != Holden)
+            {
+                model = Matrix_Translate((diamonds[i].pos.x - 1) * lado_bloco, -13.0f, (diamonds[i].pos.y - 1) * lado_bloco) * Matrix_Rotate_Y(delta_t) * Matrix_Scale(8.0f, 8.0f, 8.0f);
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                glUniform1i(g_object_id_uniform, DIAMOND);
+                DrawVirtualObject("the_diamond");
+            }
+            else
+            {
+                model = Matrix_Translate(camwalk.x, camwalk.y - 2, camwalk.z) * Matrix_Rotate_Y(g_CameraTheta) * Matrix_Translate(-1.75f + 0.5 * i, 3, -2) * Matrix_Rotate_Y(delta_t) * Matrix_Scale(0.2f, 0.2f, 0.2f);
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+                glUniform1i(g_object_id_uniform, DIAMOND);
+                DrawVirtualObject("the_diamond");
+            }
+        }
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
@@ -791,7 +845,6 @@ void drawMap(glm::mat4 model)
                     glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model));
                     glUniform1i(g_object_id_uniform, FAKE_CUBE);
                     DrawVirtualObject("the_cube");
-
                 }
                 else
                 {
@@ -811,7 +864,6 @@ void drawMap(glm::mat4 model)
         }
     }
 }
-
 
 // Função que computa as normais de um ObjModel, caso elas não tenham sido
 // especificadas dentro do arquivo ".obj"
@@ -1066,5 +1118,3 @@ void PrintObjModelInfo(ObjModel *model)
         printf("\n");
     }
 }
-
-

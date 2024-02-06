@@ -10,20 +10,23 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <GLFW/glfw3.h>
 #include <time.h>
 #include <math.h>
 #include "callbacks.h"
 
-
 #define DimLab 19
 #define lado_bloco 45
 #define altura_bloco 100
+#define RECOVERTIME 300
 
-
+int life = 10;
+int recover_time = RECOVERTIME;
+int hurt = 0;
 int Running = 500;
-float radius_player = 8;
+float radius_player = 15;
 float pi = 3.14159265;
-int canShoot = 1;
+int canShoot = 0;
 int picked_gun = 0;
 typedef enum
 {
@@ -54,7 +57,7 @@ typedef struct
     glm::vec4 dir;
     int vivo;
     float veloc;
-    int time = 1000;
+    int time = 100;
 } Bullet;
 
 typedef enum
@@ -85,15 +88,40 @@ typedef struct
     int raio;
     float veloc;
     int floating;
+    float height_center;
+    float scale;
+    int holdin;
 } Enemy;
 
-#define NumEnemies 9
+typedef enum {Floor, Holden, Stolen}Diam_state;
+
+typedef struct
+{
+    Vetor2i pos;
+    Diam_state state;
+    float raio;
+} Diamonds;
+
+#define NumDiam 8
+Diamonds diamonds[NumDiam];
+
+#define NumEnemies 11
 Enemy enemy[NumEnemies];
 Enemy CreateEnemy(int x1, int y1, tipoEnemy tipo);
 
 float DistanceDots(glm::vec4 P1, glm::vec4 P2)
 {
-    return sqrt(pow(P1.x-P2.x,2) + pow(P1.y-P2.y,2) + pow(P1.z-P2.z,2));
+    return sqrt(pow(P1.x - P2.x, 2) + pow(P1.y - P2.y, 2) + pow(P1.z - P2.z, 2));
+}
+
+Diamonds CreateDiamond(int i, int j)
+{
+    Diamonds d;
+    d.pos.x = i;
+    d.pos.y = j;
+    d.state = Floor;
+    d.raio = 18;
+    return d;
 }
 
 Bullet newBullet()
@@ -102,7 +130,8 @@ Bullet newBullet()
     bullet.vivo = 1;
     bullet.pos = camera_position_c;
     bullet.dir = camera_view_vector;
-    bullet.veloc = 0.4f;
+    bullet.veloc = 0.8f;
+    bullet.time = 200;
     return bullet;
 }
 
@@ -139,21 +168,51 @@ void cam_colisoes()
     }
 }
 
+void player_enemy_collision(Enemy *enemy)
+{
+
+    glm::vec4 inimigo = {enemy->pos.x, enemy->height_center, enemy->pos.y, 1.0f};
+    if (hurt)
+    {
+        if (recover_time <= 0)
+        {
+            recover_time == RECOVERTIME;
+            hurt = 0;
+        }
+    }
+    else if (DistanceDots(inimigo, camera_position_c) <= radius_player + enemy->raio)
+    {
+        hurt = 1;
+        for(int i = 0; i < NumDiam; i++)
+        {
+            if(diamonds[i].state == Holden && enemy->holdin == NumDiam && enemy->vivo == true)
+            {
+                
+                enemy->holdin = i;
+                diamonds[i].state = Stolen;
+                i = NumDiam;
+            }
+        }
+    }
+}
+
 void walk(float *distance)
 {
     int walking = 0, run = 0;
-    if (left_shift_key_pressed == true && Running > 0) 
+    if (left_shift_key_pressed == true && Running > 0)
     {
-        camera_speed = 0.4f;
+        camera_speed = 0.6f;
         Running--;
-        if(Running<0) Running = 0;
+        if (Running < 0)
+            Running = 0;
         run = 1;
     }
     else if (left_shift_key_pressed == false)
     {
-        camera_speed = 0.2f;
+        camera_speed = 0.4f;
         Running++;
-        if(Running>500) Running = 500;
+        if (Running > 500)
+            Running = 500;
     }
 
     if (w_key_pressed == true)
@@ -175,14 +234,14 @@ void walk(float *distance)
     {
         camera_movement += u_vector * camera_speed;
         walking = 1;
-    }  
-    if(walking == 1)
-{
-*distance += 0.1f;
-if(run == 1)*distance += 0.05f;
+    }
+    if (walking == 1)
+    {
+        *distance += 0.1f;
+        if (run == 1)
+            *distance += 0.05f;
+    }
 
-}
-    
     cam_colisoes();
 }
 
@@ -192,6 +251,7 @@ void readMap(FILE *arquivo)
 
     arquivo = fopen("../../labirinto.txt", "r+");
     int inimigo = 0;
+    int rock_number = 0;
     // Verifica se a abertura do arquivo foi bem-sucedida.
     if (arquivo == NULL)
     {
@@ -234,6 +294,11 @@ void readMap(FILE *arquivo)
                 enemy[inimigo] = CreateEnemy(i, j, Reaper);
                 inimigo++;
                 break;
+            case 'D':
+                Labirinto[i][j].type = chao;
+                diamonds[rock_number] = CreateDiamond(i, j);
+                rock_number++;
+                break;
             }
         }
         fgetc(arquivo); // quebra de linha
@@ -242,7 +307,6 @@ void readMap(FILE *arquivo)
 }
 
 /////////////////////////////////////////ENEMY///////////////////////////////////
-
 
 Enemy CreateEnemy(int x1, int y1, tipoEnemy tipo)
 {
@@ -259,29 +323,36 @@ Enemy CreateEnemy(int x1, int y1, tipoEnemy tipo)
     enemy.tile.x = (int)(x1 + lado_bloco / 2) / lado_bloco + 1;
     enemy.tile.y = (int)(y1 + lado_bloco / 2) / lado_bloco + 1;
     enemy.vivo = 1;
+    enemy.holdin = NumDiam;
+    printf("%d AAAAAAAAAAAA", enemy.holdin);
     switch (tipo)
     {
     case Scorpion:
-        enemy.vida = 4;
-        enemy.raio = 10;
+        enemy.vida = 8;
+        enemy.raio = 12;
         enemy.type = Scorpion;
-        enemy.veloc = 0.4f;
+        enemy.veloc = 0.8f;
         enemy.floating = 2;
+        enemy.height_center = -15;
+        enemy.scale = 5;
         break;
     case Golem:
-        enemy.vida = 8;
+        enemy.vida = 10;
         enemy.raio = 25;
         enemy.type = Golem;
-        enemy.veloc = 0.2f;
+        enemy.veloc = 0.6f;
         enemy.floating = 1;
+        enemy.height_center = 0;
+        enemy.scale = 3;
         break;
     case Reaper:
-        enemy.vida = 2;
-        enemy.raio = 20;
+        enemy.vida = 12;
+        enemy.raio = 18;
         enemy.type = Reaper;
-        enemy.veloc = 0.8f;
+        enemy.veloc = 1.0f;
         enemy.floating = 0;
-
+        enemy.height_center = 0;
+        enemy.scale = 3;
         break;
     };
     return enemy;
@@ -365,7 +436,7 @@ float rotacaoEnemy(Enemy enemy)
         final -= 2 * pi;
     }
     float r = enemy.percent * final + (100 - enemy.percent) * inicio;
-    // printf("%f\n", r);
+
     return r / 100;
 }
 Lado NovaDirecao(Enemy enemy)
@@ -438,6 +509,11 @@ void WalkEnemy(Enemy *enemy)
     porcentoI = porcento(PosBloco(enemy->tile.x, enemy->tile.y, enemy->dir_i), PosBloco(enemy->tile.x, enemy->tile.y, Centro), enemy->percent);
     porcentoF = porcento(PosBloco(enemy->tile.x, enemy->tile.y, Centro), PosBloco(enemy->tile.x, enemy->tile.y, enemy->dir_f), enemy->percent);
     enemy->pos = porcento(porcentoI, porcentoF, enemy->percent);
+    if(enemy->holdin != NumDiam && diamonds[enemy->holdin].state == Stolen)
+    {
+        diamonds[enemy->holdin].pos.x = enemy->tile.x;
+        diamonds[enemy->holdin].pos.y = enemy->tile.y;
+    }
     return;
 }
 
