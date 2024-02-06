@@ -369,9 +369,9 @@ int main(int argc, char *argv[])
         // os shaders de vértice e fragmentos).
         glUseProgram(g_GpuProgramID);
         walk(&distance);
-
+        
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
-        // definir o sistema de coordenadas da câmera.
+        // definir o sistema de coordenadas da câmera......
         glm::mat4 view;
 
         if (g_UseLookAtCamera)
