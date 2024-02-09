@@ -95,7 +95,7 @@ Tentou-se utilizar o ChatGpt para auxiliar na definição da mira para incorpora
 no código escrito até então, então o código foi feito por conta própria.
 
 
-# Instruções para compilacao
+# Instruções para Compilação
 
 Para a compilação do projeto, como não foram utilizadas bibliotecas extras às apresentadas em aula, foram feitos os mesmos passos
 dados pelo professor nos arquivos "LEIAME" dos laboratórios para compilação com CMAKE no vsCode. Esse arquivo "LEIAME" foi incluido aqui no Github.
