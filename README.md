@@ -98,10 +98,17 @@ no código escrito até então, então o código foi feito por conta própria.
 
 
 
+# Instruções para compilacao
+
+Para a compilação do projeto, como não foram utilizadas bibliotecas extras às apresentadas em aula, foram feitos os mesmos passos
+dados pelo professor nos arquivos "LEIAME" dos laboratóriso para compilação com CMAKE no vsCode. Esse arquivo "LEIAME" foi incluido aqui no código.
+No arquivo tasks.json da pasta vscode, é preciso colocar o caminho do diretório do compilador, como o mingW.
+
 # Imagens do jogo
 
 
 ![Captura de tela 2024-02-09 163325](https://github.com/Enzosbx/TrabalhoFinalFCG/assets/91389519/1cd401f3-47c6-415b-ab27-c98898611f82)
+
 
 
 
