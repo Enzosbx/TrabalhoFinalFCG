@@ -49,7 +49,7 @@ Os diamantes e a arma (quando não capturadas) tem animação com movimento de r
 As animações de rotação e deslocamento de inimigos pelo mapa são controladas baseadas no tempo.
 
 
- - **Testes de Interseção Entre Objetos Virtuais:** Foram definidos 4 testes de interseção. Há a definição da colisão do personagem(câmera) com os inimigos e diamante ("player_enemy_collision"), que é **esfera-esfera** ; da colisão do personagem com o cenário do mapa ("cam_colisoes"), que é **esfera-cubo** ; da colisão da bala com o cenário ("HitBullet") ; e da colisão da da bala com os inimigos ("HitBulletEnemy"), que é **ponto-esfera** . 
+ - **Testes de Interseção Entre Objetos Virtuais:** Foram definidos 4 testes de interseção. Há a definição da colisão do personagem(câmera) com os inimigos e diamante ("player_enemy_collision"), que é **esfera-esfera** ; da colisão do personagem com o cenário do mapa ("cam_colisoes"), que é **esfera-plano** ; da colisão da bala com o cenário ("HitBullet"), que é **ponto-cubo** ; e da colisão da da bala com os inimigos ("HitBulletEnemy"), que é **ponto-esfera** . 
 
 
 
@@ -95,6 +95,15 @@ Mas, em sua maioria, cada um foi responsável pela implementação dos seguintes
 
 Tentou-se utilizar o ChatGpt para  auxiliar na definição da mira para utilização no sistema da arma. Porém, não foi possível fazer com que a resposta se encaixasse
 no código escrito até então, então o código foi feito por conta própria.
+
+
+
+# Imagens do jogo
+
+
+![Captura de tela 2024-02-09 163325](https://github.com/Enzosbx/TrabalhoFinalFCG/assets/91389519/1cd401f3-47c6-415b-ab27-c98898611f82)
+
+
 
 
 
