@@ -9,9 +9,10 @@
 #include <GLFW/glfw3.h>
 #include "matrices.h"
 
-float distance = 0;
 // Informações iniciais da camera
 
+
+float distance = 0;
 float g_ScreenRatio = 1.0f;
 float g_CameraTheta = 0.0f;     // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;       // Ângulo em relação ao eixo Y
@@ -68,7 +69,7 @@ glm::mat4 defineViewFCam(glm::mat4 view)
     camwalk.y += 2 * sin(distance / 5) * sin(distance / 5);
     view = Matrix_Camera_View(camwalk, camera_view_vector, camera_up_vector);
 
-    // Vetores utilizados para a movimentação da câmera!
+    // Vetores utilizados para a movimentação da câmera
 
     w_vector = -camera_view_vector / norm(camera_view_vector);
     up_w_cross = crossproduct(camera_up_vector, w_vector);
