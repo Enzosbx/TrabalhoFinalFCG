@@ -201,7 +201,7 @@ void walk(float *distance)
     int walking = 0, run = 0;
     if (left_shift_key_pressed == true && Running > 0)
     {
-        camera_speed = 0.6f;
+        camera_speed = 0.7f;
         Running--;
         if (Running < 0)
             Running = 0;
@@ -209,30 +209,31 @@ void walk(float *distance)
     }
     else if (left_shift_key_pressed == false)
     {
-        camera_speed = 0.4f;
+        camera_speed = 0.5f;
         Running++;
         if (Running > 500)
             Running = 500;
     }
-
+    float PressedButtons = (w_key_pressed || s_key_pressed) + (a_key_pressed || d_key_pressed);
+    //printf("%d", PressedButtons);
     if (w_key_pressed == true)
     {
-        camera_movement += glm::vec4{-w_vector.x * norm2D(), 0.0f, -w_vector.z * norm2D(), w_vector.w} * camera_speed;
+        camera_movement += glm::vec4{-w_vector.x * norm2D(), 0.0f, -w_vector.z * norm2D(), w_vector.w} * camera_speed/sqrt(PressedButtons);
         walking = 1;
     }
     if (a_key_pressed == true)
     {
-        camera_movement += -u_vector * camera_speed;
+        camera_movement += -u_vector * camera_speed/sqrt(PressedButtons);
         walking = 1;
     }
     if (s_key_pressed == true)
     {
-        camera_movement += glm::vec4{w_vector.x * norm2D(), 0.0f, w_vector.z * norm2D(), w_vector.w} * camera_speed;
+        camera_movement += glm::vec4{w_vector.x * norm2D(), 0.0f, w_vector.z * norm2D(), w_vector.w} * camera_speed/sqrt(PressedButtons);
         walking = 1;
     }
     if (d_key_pressed == true)
     {
-        camera_movement += u_vector * camera_speed;
+        camera_movement += u_vector * camera_speed/sqrt(PressedButtons);
         walking = 1;
     }
     if (walking == 1)
@@ -324,20 +325,19 @@ Enemy CreateEnemy(int x1, int y1, tipoEnemy tipo)
     enemy.tile.y = (int)(y1 + lado_bloco / 2) / lado_bloco + 1;
     enemy.vivo = 1;
     enemy.holdin = NumDiam;
-    printf("%d AAAAAAAAAAAA", enemy.holdin);
     switch (tipo)
     {
     case Scorpion:
         enemy.vida = 8;
         enemy.raio = 12;
         enemy.type = Scorpion;
-        enemy.veloc = 0.8f;
+        enemy.veloc = 1.8f;
         enemy.floating = 2;
         enemy.height_center = -15;
         enemy.scale = 5;
         break;
     case Golem:
-        enemy.vida = 10;
+        enemy.vida = 20;
         enemy.raio = 25;
         enemy.type = Golem;
         enemy.veloc = 0.6f;
@@ -346,10 +346,10 @@ Enemy CreateEnemy(int x1, int y1, tipoEnemy tipo)
         enemy.scale = 3;
         break;
     case Reaper:
-        enemy.vida = 12;
+        enemy.vida = 15;
         enemy.raio = 18;
         enemy.type = Reaper;
-        enemy.veloc = 1.0f;
+        enemy.veloc = 1.2f;
         enemy.floating = 0;
         enemy.height_center = 0;
         enemy.scale = 3;
