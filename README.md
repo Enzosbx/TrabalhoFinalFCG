@@ -1,4 +1,3 @@
-![Captura de tela 2024-02-09 170523](https://github.com/Enzosbx/TrabalhoFinalFCG/assets/91389519/7170e1e3-136a-4503-9f1b-aeb2d079b646)
 # Alunos
 **ENZO SERGI BERQUO XAVIER** e 
 **GEANCARLO KOZENIESKI**
