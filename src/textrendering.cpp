@@ -1,6 +1,9 @@
 
 /*
 
+Definição de algumas funções de print de texto que o professor utilizou 
+nos laboratórios, caso queira usar
+
 // Based on http://hamelot.io/visualization/opengl-text-without-any-external-libraries/
 //   and on https://github.com/rougier/freetype-gl
 
