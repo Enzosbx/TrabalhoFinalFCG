@@ -37,7 +37,7 @@ out vec4 normal;
 // Variaveis para implementar gouraud shading.
 
 uniform vec4 light_position;
-out vec4 cor_v;    // será a cor "recebida" pelo REAPER no fragment_shader
+out vec4 cor_v;                // será a cor "recebida" pelo REAPER no fragment_shader
 
 
 void main()
@@ -48,16 +48,21 @@ void main()
     float U = 0; 
     float V = 0;
     
+
+    
+    float minx = bbox_min.x;   
+    float maxx = bbox_max.x;
+    float miny = bbox_min.y;
+    float maxy = bbox_max.y;
+
         
     gl_Position = projection * view * model * model_coefficients; 
+
 
     vec4 origin = vec4(0.0, 0.0, 0.0, 1.0);
     position_model = model_coefficients;
     position_world = model * model_coefficients;
     vec4 camera_position = inverse(view) * origin;
-
-
-
 
 
      // Espectro da fonte de iluminação
@@ -67,28 +72,20 @@ void main()
     // Refletância especular
 
     vec3 Ks; 
-    Ks = vec3(0.001f,0.001f,0.001f);
-
-
+    Ks = vec3(0.1f,0.1f,0.1f);
     float q = 1.0;
-
-
-    float minx = bbox_min.x;   
-    float maxx = bbox_max.x;
-    float miny = bbox_min.y;
-    float maxy = bbox_max.y;
 
 
     U = (position_model.x - minx) / (maxx - minx);
     V = (position_model.y - miny) / (maxy - miny);
-
     textcoords = texture_coefficients;
 
+    // Refletância difusa
 
     vec3 Kd = texture(TextureImage2,vec2(U,V)).rgb;
 
-    normal = inverse(transpose(model)) * normal_coefficients;  // Esse tem nos dois
 
+    normal = inverse(transpose(model)) * normal_coefficients;  // Esse tem nos dois
     normal.w = 0.0;
 
     vec4 p = position_world;
@@ -101,33 +98,27 @@ void main()
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
 
-
     l = v;
 
-    float lambert = max(0,dot(n,l));
 
-    vec4 r = vec4(0.0,0.0,0.0,0.0); 
-    r = 2 * n * dot(n,l) - l;
-
-
-    // Espectro da luz ambiente
+    // Luz ambiente
 
     vec3 Ia = vec3(0.2,0.2,0.2);
-    
     vec3 Ka = vec3(0.3,0.3,0.3);
-
     vec3 ambient_term = vec3(0.0,0.0,0.0); 
     ambient_term = Ka * Ia;
 
+    // Termo Blinn-Phong
 
     vec4 h = (v+l) / length(v+l);
 
     vec3 blinn_phong_specular_term  = vec3(0.0,0.0,0.0); 
     blinn_phong_specular_term = Ks * I * pow (max (0, dot(n,h)) , q);
 
+    // Termo Lambert
 
-  //  vec3 phong_specular_term  = vec3(0.0,0.0,0.0); 
-  //  phong_specular_term = Ks * I * pow (max (0, dot(r,v)) , q);
+    float lambert = max(0,dot(n,l));
+
 
     cor_v.a = 1;
 
