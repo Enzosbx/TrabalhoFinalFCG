@@ -115,36 +115,26 @@ void main()
     float q; // Expoente especular para o modelo de iluminação de Phong
 
 
-     // Espectro da fonte de iluminação
-    vec3 I = vec3(1.0,1.0,1.0);           
-    // Espectro da luz ambiente
-    vec3 Ia = vec3(0.2,0.2,0.2);        
-
-
     // Coordenadas de textura
 
     float U = 0; 
     float V = 0;
 
     if ( object_id == GOLEM_EYES )          
-    {
-                                    
-        Kd = vec3(1.0,0.0,0.0);
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.5,0.0,0.0);
-        q = 1.0;
+    {                                 
+        Kd = vec3(1.0,0.0,0.0);        // olhos serão vermelhos
     }
-    else if ( object_id == GOLEM_HANDS_LEGS )   // ch
+    else if ( object_id == GOLEM_HANDS_LEGS )   
     {
         U = define_U_coeff(0);
         V = define_V_coeff(0);
     }
-    else if ( object_id == GOLEM_HEAD )   // ch
+    else if ( object_id == GOLEM_HEAD )   
     {
         U = define_U_coeff(0);
         V = define_V_coeff(0);
     }
-    else if ( object_id == GOLEM_TORSO )   // ch
+    else if ( object_id == GOLEM_TORSO )  
     {
         U = define_U_coeff(0);
         V = define_V_coeff(0);
@@ -207,55 +197,55 @@ void main()
         V = define_V_coeff(1);
     }
 
-    else        // Objeto desconhecido = verde  
+    else  
     {
-        Kd = vec3(0.0,0.6,0.0);
-        Ks = vec3(0.0,0.0,0.0);
-        Ka = vec3(0.0,0.0,0.0);
-        q = 1.0;
+        Kd = vec3(0.0,1.0,0.0);   // Objeto desconhecido terá a cor verde
     }
 
 
-    // Termo difuso utilizando a lei dos cossenos de Lambert
-
-    vec3 lambert_diffuse_term = vec3(0.0,0.0,0.0); 
-    lambert_diffuse_term = Kd * I * max (0, dot(n,l));
-
     
+    // Espectro da fonte de iluminação
+    
+    vec3 I = vec3(1.0,1.0,1.0);           
+    
+    // Espectro da luz ambiente
+    
+    vec3 Ia = vec3(0.1,0.1,0.1);        
+
+
     // Termo ambiente
 
-    vec3 ambient_term = vec3(0.1,0.1,0.1); 
+    Ka = vec3(0.1,0.1,0.1);
+    vec3 ambient_term = vec3(0.0,0.0,0.0); 
     ambient_term = Ka * Ia;
 
    
     // Termo especular utilizando o modelo de iluminação de Blinn-Phong
 
-    q = 0.5;
-    Ks = vec3(0.05,0.05,0.05);
-
+    q = 0.8;
+    Ks = vec3(0.1,0.1,0.1);
     vec4 h = (v+l) / length(v+l);
 
     vec3 blinn_phong_specular_term  = vec3(0.0,0.0,0.0); 
     blinn_phong_specular_term = Ks * I * pow (max (0, dot(n,h)) , q);
 
-   // vec3 phong_specular_term  = vec3(0.0,0.0,0.0); 
-   // phong_specular_term = Ks * I * pow (max (0, dot(r,v)) , q);
 
 
-    // Equação de Iluminação de lambert (uma das partes do lambert_diffuse_term)
-
-    float lambert = max(0,dot(n,l));  
+    // equação de Iluminação de lambert (uma das partes do lambert_diffuse_term)
+   
+      float lambert = max(0,dot(n,l));  
   
-    if (object_id == WALL_CUBE) {     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0 , e assim por diante
+    if (object_id == WALL_CUBE) {     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0 , e assim por diante.
+                                    // A iluminação dos objetos, com exceção da parede falsa (FAKE_CUBE) é por meio do lambert_diffuse_term + termo ambiente.
 
        vec3 Kd = texture(TextureImage0, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb = (Kd * I * lambert) + ambient_term;   
     }
 
     else if (object_id == FLOOR_CUBE) {
 
        vec3 Kd = texture(TextureImage1, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb = (Kd * I * lambert) + ambient_term;
 
     }
 
@@ -269,53 +259,50 @@ void main()
     else if (object_id == SCORPION) {
   
        vec3 Kd = texture(TextureImage3, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb = (Kd * I * lambert) + ambient_term;
     }
     
     else if (object_id == GUN) {
 
        vec3 Kd = texture(TextureImage4, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb = (Kd * I * lambert) + ambient_term;
     }
 
     else if (object_id == BULLETA || object_id == BULLETB || object_id == BULLETC) 
     {
        vec3 Kd = texture(TextureImage5, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb = (Kd * I * lambert) + ambient_term;
     }
 
-    else if (object_id == FAKE_CUBE) 
+    else if (object_id == FAKE_CUBE)            // utiliza modelo de iluminação de blinn-phong,
+                                                // que é adicionado ao lambert_diffuse_term + ambient term
     {
        vec3 Kd = texture(TextureImage6, vec2(U,V)).rgb;
-       color.rgb = Kd * I * lambert + ambient_term + blinn_phong_specular_term;
+       color.rgb = (Kd * I * lambert) + ambient_term + blinn_phong_specular_term;
 
     }
 
     else if (object_id == GOLEM_TORSO) {
   
        vec3 Kd = texture(TextureImage7, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb =  (Kd * I * lambert) + ambient_term;
     }
 
     else if (object_id == GOLEM_HEAD || object_id == GOLEM_HANDS_LEGS) {
   
        vec3 Kd = texture(TextureImage8, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb =  (Kd * I * lambert) + ambient_term;
     }
 
     else if (object_id == DIAMOND) {
   
        vec3 Kd = texture(TextureImage9, vec2(U,V)).rgb;
-       color.rgb = Kd * (lambert + 0.01);
+       color.rgb =  (Kd * I * lambert) + ambient_term;
     }
 
     else {
 
-
-      // Cor final do fragmento calculada com uma combinação dos termos difuso,
-      // especular, e ambiente. Veja slide 129 do documento Aula_17_e_18_Modelos_de_Iluminacao.pdf.
-
-      color.rgb = lambert_diffuse_term + ambient_term + blinn_phong_specular_term;
+      color.rgb = Kd * (lambert + 0.01);
 
     }
 
